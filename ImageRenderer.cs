@@ -18,7 +18,7 @@ namespace noughts_and_crosses
         public bool showDepthMap;
 
         private Bitmap backingBitmap;
-        private byte[,] depthMap;
+        private ushort[,] depthMap;
         private Graphics backingGraphics;
 
         public ImageRenderer(int newWidth, int newHeight)
@@ -29,12 +29,12 @@ namespace noughts_and_crosses
 
             bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgr32, null);
             backingBitmap = new Bitmap(width, height, bitmap.BackBufferStride, System.Drawing.Imaging.PixelFormat.Format32bppArgb, bitmap.BackBuffer);
-            depthMap = new byte[width, height];
+            depthMap = new ushort[width, height];
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    depthMap[x, y] = 255;
+                    depthMap[x, y] = ushort.MaxValue;
                 }
             }
             backingGraphics = Graphics.FromImage(backingBitmap);
@@ -70,7 +70,7 @@ namespace noughts_and_crosses
             }
             else
             {
-                // Fill the image with the given colour
+                // Fill the image with white
                 backingGraphics.Clear(System.Drawing.Color.White);
             }
             // Set the depth buffer to max depth
@@ -78,7 +78,7 @@ namespace noughts_and_crosses
             {
                 for (int y = 0; y < height; y++)
                 {
-                    depthMap[x, y] = 255;
+                    depthMap[x, y] = ushort.MaxValue;
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace noughts_and_crosses
                         {
                             continue;
                         }
-                        int intDepth = (int)(depth * 255);
+                        int intDepth = (int)(depth * ushort.MaxValue);
                         if (intDepth < depthMap[x, y])
                         {
                             // set this pixel
@@ -157,14 +157,13 @@ namespace noughts_and_crosses
                             }
                             else
                             {
-                                backingBitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(255, intDepth, intDepth, intDepth));
+                                backingBitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(255, intDepth / 256, intDepth / 256, intDepth / 256));
                             }
-                            depthMap[x, y] = (byte)intDepth;
+                            depthMap[x, y] = (ushort)intDepth;
                         }
                     }
                 }
             }
-            //backingGraphics.FillRectangle(new SolidBrush(colour), minX, minY, maxX - minX, maxY - minY);
         }
 
         private int Edge(Vector3D p1, Vector3D p2, Vector3D p3)

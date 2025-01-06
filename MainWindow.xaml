@@ -7,9 +7,14 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="1000" Width="1000">
     <Grid Background="Black">
-        <TextBox Name="degreesX" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" TextChanged="NewDegrees">0</TextBox>
-        <TextBox Name="degreesY" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,5,5" TextChanged="NewDegrees">0</TextBox>
-        <TextBox Name="degreesZ" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,55,5,5" TextChanged="NewDegrees">0</TextBox>
+        <TextBlock Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5,5,5">Position</TextBlock>
+        <TextBox Name="positionX" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,5,5" TextChanged="NewPosition">0</TextBox>
+        <TextBox Name="positionY" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,55,5,5" TextChanged="NewPosition">0</TextBox>
+        <TextBox Name="positionZ" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,80,5,5" TextChanged="NewPosition">3</TextBox>
+        <TextBlock Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="110,5,5,5">Rotation</TextBlock>
+        <TextBox Name="degreesX" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,30,5,5" TextChanged="NewDegrees">0</TextBox>
+        <TextBox Name="degreesY" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,55,5,5" TextChanged="NewDegrees">0</TextBox>
+        <TextBox Name="degreesZ" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,80,5,5" TextChanged="NewDegrees">0</TextBox>
         <Viewbox Stretch="Uniform">
             <Canvas Width="1000" Height="1000">
                 <Border Width="752" Height="752" Margin="124" BorderBrush="White" BorderThickness="1">

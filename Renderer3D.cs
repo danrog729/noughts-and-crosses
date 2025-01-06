@@ -165,7 +165,7 @@ namespace noughts_and_crosses
             Matrix4D rotationXMatrix = Matrix4D.RotationXMatrix(-Rotation);
             CameraSpaceMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix * translationMatrix;
 
-            Matrix4D orthoTranslateMatrix = Matrix4D.TranslationMatrix(new Vector3D(0.0f, 0.0f, NearClip));
+            Matrix4D orthoTranslateMatrix = Matrix4D.TranslationMatrix(new Vector3D(0.0f, 0.0f, -NearClip));
             Matrix4D orthoScaleMatrix = Matrix4D.ScaleMatrix(new Vector3D(1 / (NearClip * Scene3D.TanDegrees(FOV / 2.0f)), 1 / (NearClip * Scene3D.TanDegrees(FOV / 2.0f) / AspectRatio), 1 / (FarClip - NearClip)));
             OrthographicMatrix = orthoScaleMatrix * orthoTranslateMatrix;
 

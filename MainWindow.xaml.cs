@@ -26,6 +26,26 @@ namespace noughts_and_crosses
             scene = new Scene3D(ref Viewport);
         }
 
+        public void NewPosition(object sender, RoutedEventArgs e)
+        {
+            if (scene != null)
+            {
+                if (Single.TryParse(positionX.Text, out float result))
+                {
+                    scene.Camera.Position = new Vector3D(result, scene.Camera.Position.Y, scene.Camera.Position.Z);
+                }
+                if (Single.TryParse(positionY.Text, out result))
+                {
+                    scene.Camera.Position = new Vector3D(scene.Camera.Position.X, result, scene.Camera.Position.Z);
+                }
+                if (Single.TryParse(positionZ.Text, out result))
+                {
+                    scene.Camera.Position = new Vector3D(scene.Camera.Position.X, scene.Camera.Position.Y, result);
+                }
+                scene.Render();
+            }
+        }
+
         public void NewDegrees(object sender, RoutedEventArgs e)
         {
             if (scene != null)
