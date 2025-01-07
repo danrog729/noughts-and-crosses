@@ -1,4 +1,6 @@
-﻿using System.Security.Policy;
+﻿using System.Diagnostics;
+using System.Security.Cryptography.Xml;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,26 +28,6 @@ namespace noughts_and_crosses
             scene = new Scene3D(ref Viewport);
         }
 
-        public void NewPosition(object sender, RoutedEventArgs e)
-        {
-            if (scene != null)
-            {
-                if (Single.TryParse(positionX.Text, out float result))
-                {
-                    scene.Camera.Position = new Vector3D(result, scene.Camera.Position.Y, scene.Camera.Position.Z);
-                }
-                if (Single.TryParse(positionY.Text, out result))
-                {
-                    scene.Camera.Position = new Vector3D(scene.Camera.Position.X, result, scene.Camera.Position.Z);
-                }
-                if (Single.TryParse(positionZ.Text, out result))
-                {
-                    scene.Camera.Position = new Vector3D(scene.Camera.Position.X, scene.Camera.Position.Y, result);
-                }
-                scene.Render();
-            }
-        }
-
         public void NewDegrees(object sender, RoutedEventArgs e)
         {
             if (scene != null)
@@ -64,6 +46,19 @@ namespace noughts_and_crosses
                 }
                 scene.Render();
             }
+        }
+
+        public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            scene.NewSize((int)Viewport.ActualWidth, (int)Viewport.ActualHeight);
+        }
+
+        public void ViewportZoom(object sender, MouseWheelEventArgs e)
+        {
+            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV);
+            Vector3D delta = (Vector3D)(Matrix4D.RotationMatrix(scene.Camera.Rotation) * new Vector3D(0.0f, 0.0f, -zoomDistance * e.Delta / 120));
+            scene.Camera.Position = scene.Camera.Position + delta;
+            scene.Render();
         }
     }
 }

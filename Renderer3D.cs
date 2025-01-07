@@ -39,9 +39,16 @@ namespace noughts_and_crosses
             });
 
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
-            Wireframe = false;
+            Wireframe = true;
             image.showDepthMap = false;
 
+            Render();
+        }
+
+        public void NewSize(int width, int height)
+        {
+            image.width = width; 
+            image.height = height;
             Render();
         }
 
@@ -434,6 +441,7 @@ namespace noughts_and_crosses
             0.0f, (float)Math.Sin(rotation.X), (float)Math.Cos(rotation.X), 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f
             );
+        public static Matrix4D RotationMatrix(Vector3D rotation) => RotationZMatrix(rotation) * RotationYMatrix(rotation) * RotationXMatrix(rotation);
 
         public static Matrix4D ScaleMatrix(Vector3D scale) => new Matrix4D(
             scale.X, 0.0f, 0.0f, 0.0f,

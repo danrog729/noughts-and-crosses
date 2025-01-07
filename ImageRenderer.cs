@@ -13,8 +13,8 @@ namespace noughts_and_crosses
     class ImageRenderer
     {
         public WriteableBitmap bitmap;
-        public int width { get; private set; }
-        public int height { get; private set; }
+        public int width;
+        public int height;
         public bool showDepthMap;
 
         private Bitmap backingBitmap;
