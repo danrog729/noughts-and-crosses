@@ -1,5 +1,7 @@
 ﻿using noughts_and_crosses;
+using System.CodeDom;
 using System.Drawing;
+using System.Reflection.Metadata;
 
 namespace noughts_and_crosses
 {
@@ -17,7 +19,7 @@ namespace noughts_and_crosses
             image = new ImageRenderer(750, 750);
             canvas.Source = image.bitmap;
 
-            Camera = new Camera3D(60.0f, 0.1f, 10.0f, 1.0f, new Vector3D(0.0f, 0.0f, 3.0f), new Vector3D(0.0f, 0.0f, 0.0f));
+            Camera = new Camera3D(60.0f, 0.1f, 10.0f, 1.0f, new Vector3D(0.0f, 0.0f, 3.0f), new Quaternion(1.0f, 0.0f, 0.0f, 0.0f));
             Objects = new List<Object3D>();
 
             Objects.Add(new Object3D() 
@@ -34,7 +36,7 @@ namespace noughts_and_crosses
             Objects.Add(new Object3D()
             {
                 Position = new Vector3D(-0.5f, 0.5f, 0.5f),
-                Rotation = new Vector3D((float)Math.PI / 6, (float)Math.PI / 6, (float)Math.PI / 6),
+                Rotation = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f),
                 Scale = new Vector3D(0.125f, 0.25f, 0.125f)
             });
 
@@ -118,6 +120,21 @@ namespace noughts_and_crosses
         {
             return (float)Math.Tan(Math.PI * degrees / 180.0f);
         }
+
+        public static float ArcsinDegrees(float length)
+        {
+            return 180.0f * (float)Math.Asin(length) / (float)Math.PI;
+        }
+
+        public static float ArccosDegrees(float length)
+        {
+            return 180.0f * (float)Math.Acos(length) / (float)Math.PI;
+        }
+
+        public static float ArctanDegrees(float length)
+        {
+            return 180.0f * (float)Math.Atan(length) / (float)Math.PI;
+        }
     }
 
     class Camera3D
@@ -138,8 +155,8 @@ namespace noughts_and_crosses
             }
         }
 
-        private Vector3D _rotation;
-        public Vector3D Rotation
+        private Quaternion _rotation;
+        public Quaternion Rotation
         {
             get => _rotation;
             set
@@ -153,7 +170,7 @@ namespace noughts_and_crosses
         public Matrix4D PerspectiveMatrix { get; private set; }
         public Matrix4D OrthographicMatrix { get; private set; }
         
-        public Camera3D(float fov, float nearClip, float farClip, float aspectRatio, Vector3D position, Vector3D rotation)
+        public Camera3D(float fov, float nearClip, float farClip, float aspectRatio, Vector3D position, Quaternion rotation)
         {
             FOV = fov;
             NearClip = nearClip;
@@ -167,10 +184,7 @@ namespace noughts_and_crosses
         public void CalculateMatrices()
         {
             Matrix4D translationMatrix = Matrix4D.TranslationMatrix(-Position);
-            Matrix4D rotationZMatrix = Matrix4D.RotationZMatrix(-Rotation);
-            Matrix4D rotationYMatrix = Matrix4D.RotationYMatrix(-Rotation);
-            Matrix4D rotationXMatrix = Matrix4D.RotationXMatrix(-Rotation);
-            CameraSpaceMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix * translationMatrix;
+            CameraSpaceMatrix = Rotation * translationMatrix * Rotation.Conjugate();
 
             Matrix4D orthoTranslateMatrix = Matrix4D.TranslationMatrix(new Vector3D(0.0f, 0.0f, -NearClip));
             Matrix4D orthoScaleMatrix = Matrix4D.ScaleMatrix(new Vector3D(1 / (NearClip * Scene3D.TanDegrees(FOV / 2.0f)), 1 / (NearClip * Scene3D.TanDegrees(FOV / 2.0f) / AspectRatio), 1 / (FarClip - NearClip)));
@@ -201,8 +215,8 @@ namespace noughts_and_crosses
             }
         }
 
-        private Vector3D _rotation;
-        public Vector3D Rotation
+        private Quaternion _rotation;
+        public Quaternion Rotation
         {
             get
             {
@@ -239,7 +253,7 @@ namespace noughts_and_crosses
         public Object3D()
         {
             _position = new Vector3D(0.0f, 0.0f, 0.0f);
-            _rotation = new Vector3D(0.0f, 0.0f, 0.0f);
+            _rotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
             _scale = new Vector3D(1.0f, 1.0f, 1.0f);
             CalculateMatrices();
 
@@ -280,11 +294,8 @@ namespace noughts_and_crosses
         private void CalculateMatrices()
         {
             Matrix4D translationMatrix = Matrix4D.TranslationMatrix(Position);
-            Matrix4D rotationZMatrix = Matrix4D.RotationZMatrix(Rotation);
-            Matrix4D rotationYMatrix = Matrix4D.RotationYMatrix(Rotation);
-            Matrix4D rotationXMatrix = Matrix4D.RotationXMatrix(Rotation);
             Matrix4D scaleMatrix = Matrix4D.ScaleMatrix(Scale);
-            LocalToWorldMatrix = translationMatrix * rotationZMatrix * rotationYMatrix * rotationXMatrix * scaleMatrix;
+            LocalToWorldMatrix = translationMatrix * (Rotation * scaleMatrix * Rotation.Conjugate());
         }
     }
 
@@ -370,6 +381,14 @@ namespace noughts_and_crosses
             this.m30 = m30; this.m31 = m31; this.m32 = m32; this.m33 = m33;
         }
 
+        public Matrix4D(Vector4D i, Vector4D j, Vector4D k, Vector4D fourth)
+        {
+            m00 = i.X; m01 = j.X; m02 = k.X; m03 = fourth.X;
+            m10 = i.Y; m11 = j.Y; m12 = k.Y; m13 = fourth.Y;
+            m20 = i.Z; m21 = j.Z; m22 = k.Z; m23 = fourth.Z;
+            m30 = i.W; m31 = j.W; m32 = k.W; m33 = fourth.W;
+        }
+
         public static Matrix4D operator +(Matrix4D matrix) => matrix;
         public static Matrix4D operator -(Matrix4D matrix) => new Matrix4D(
             -matrix.m00, -matrix.m01, -matrix.m02, -matrix.m03,
@@ -449,5 +468,57 @@ namespace noughts_and_crosses
             0.0f, 0.0f, scale.Z, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f
             );
+    }
+
+    struct Quaternion
+    {
+        public float r;
+        public float i;
+        public float j;
+        public float k;
+
+        public Quaternion(float r, float i, float j, float k)
+        {
+            this.r = r;
+            this.i = i;
+            this.j = j;
+            this.k = k;
+        }
+
+        public static Quaternion operator +(Quaternion quaternion) => quaternion;
+        public static Quaternion operator -(Quaternion quaternion) => new Quaternion(-quaternion.r, -quaternion.i, -quaternion.j, -quaternion.k);
+
+        public static Quaternion operator +(Quaternion q1, Quaternion q2) => new Quaternion(q1.r + q2.r, q1.i + q2.i, q1.j + q2.j, q1.k + q2.k);
+        public static Quaternion operator -(Quaternion q1, Quaternion q2) => new Quaternion(q1.r - q2.r, q1.i - q2.i, q1.j - q2.j, q1.k - q2.k);
+
+        public static Quaternion operator *(Quaternion quaternion, float scalar) => new Quaternion(scalar * quaternion.r, scalar * quaternion.i, scalar * quaternion.j, scalar * quaternion.k);
+        public static Quaternion operator *(float scalar, Quaternion quaternion) => quaternion * scalar;
+        public static Matrix4D operator *(Quaternion quaternion, Matrix4D matrix) => new Matrix4D(
+            (Vector4D)(quaternion * new Vector3D(matrix.m00, matrix.m10, matrix.m20)),
+            (Vector4D)(quaternion * new Vector3D(matrix.m01, matrix.m11, matrix.m21)),
+            (Vector4D)(quaternion * new Vector3D(matrix.m02, matrix.m12, matrix.m22)),
+            new Vector4D(matrix.m03, matrix.m13, matrix.m23, matrix.m33)
+            );
+
+        public static Matrix4D operator *(Matrix4D matrix, Quaternion quaternion) => new Matrix4D(
+            (Vector4D)(new Vector3D(matrix.m00, matrix.m10, matrix.m20) * quaternion),
+            (Vector4D)(new Vector3D(matrix.m01, matrix.m11, matrix.m21) * quaternion),
+            (Vector4D)(new Vector3D(matrix.m02, matrix.m12, matrix.m22) * quaternion),
+            new Vector4D(matrix.m03, matrix.m13, matrix.m23, matrix.m33)
+            );
+
+        public static Quaternion operator *(Quaternion q1, Quaternion q2) => new Quaternion(
+            q1.r * q2.r - q1.i * q2.i - q1.j * q2.j - q1.k * q2.k,
+            q1.r * q2.i + q1.i * q2.r + q1.j * q2.k - q1.k * q2.j,
+            q1.r * q2.j - q1.i * q2.k + q1.j * q2.r + q1.k * q2.i,
+            q1.r * q2.k + q1.i * q2.j - q1.j * q2.i + q1.k * q2.r
+            );
+
+        public static implicit operator Quaternion(Vector3D vector) => new Quaternion(0.0f, vector.X, vector.Y, vector.Z);
+        public static explicit operator Quaternion(Vector4D vector) => new Quaternion(0.0f, vector.X, vector.Y, vector.Z);
+        public static explicit operator Vector3D(Quaternion quaternion) => new Vector3D(quaternion.i, quaternion.j, quaternion.k);
+        public static explicit operator Vector4D(Quaternion quaternion) => new Vector4D(quaternion.i, quaternion.j, quaternion.k, 0.0f);
+
+        public Quaternion Conjugate() => new Quaternion(r, -i, -j, -k);
     }
 }

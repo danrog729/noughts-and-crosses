@@ -21,31 +21,13 @@ namespace noughts_and_crosses
     public partial class MainWindow : Window
     {
         Scene3D scene;
+        Point lastMousePos;
+        bool mouseDownLast = false;
 
         public MainWindow()
         {
             InitializeComponent();
             scene = new Scene3D(ref Viewport);
-        }
-
-        public void NewDegrees(object sender, RoutedEventArgs e)
-        {
-            if (scene != null)
-            {
-                if (Single.TryParse(degreesX.Text, out float result))
-                {
-                    scene.Camera.Rotation = new Vector3D(Scene3D.DegreesToRadians(result), scene.Camera.Rotation.Y, scene.Camera.Rotation.Z);
-                }
-                if (Single.TryParse(degreesY.Text, out result))
-                {
-                    scene.Camera.Rotation = new Vector3D(scene.Camera.Rotation.X, Scene3D.DegreesToRadians(result), scene.Camera.Rotation.Z);
-                }
-                if (Single.TryParse(degreesZ.Text, out result))
-                {
-                    scene.Camera.Rotation = new Vector3D(scene.Camera.Rotation.X, scene.Camera.Rotation.Y, Scene3D.DegreesToRadians(result));
-                }
-                scene.Render();
-            }
         }
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
@@ -56,9 +38,29 @@ namespace noughts_and_crosses
         public void ViewportZoom(object sender, MouseWheelEventArgs e)
         {
             float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV);
-            Vector3D delta = (Vector3D)(Matrix4D.RotationMatrix(scene.Camera.Rotation) * new Vector3D(0.0f, 0.0f, -zoomDistance * e.Delta / 120));
+            Vector3D delta = (Vector3D)(scene.Camera.Rotation * new Vector3D(0.0f, 0.0f, -zoomDistance * e.Delta / 120));
             scene.Camera.Position = scene.Camera.Position + delta;
             scene.Render();
+        }
+
+        public void ViewportMouseMove(object sender, MouseEventArgs e)
+        {
+            //if (e.LeftButton.Equals(MouseButtonState.Pressed))
+            //{
+            //    Point currentPos = e.GetPosition(Viewport);
+            //    if (mouseDownLast)
+            //    {
+            //        Vector delta = currentPos - lastMousePos;
+            //        scene.Camera.Rotation = new Vector3D(scene.Camera.Rotation.X + (float)delta.Y * 0.001f, scene.Camera.Rotation.Y + (float)delta.X * 0.001f, scene.Camera.Rotation.Z);
+            //        scene.Render();
+            //    }
+            //    lastMousePos = currentPos;
+            //    mouseDownLast = true;
+            //}
+            //else
+            //{
+            //    mouseDownLast = false;
+            //}
         }
     }
 }

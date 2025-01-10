@@ -7,15 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="1000" Width="1000">
     <Grid Background="Black">
-        <TextBlock Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,5,5,5">Rotation</TextBlock>
-        <TextBox Name="degreesX" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,30,5,5" TextChanged="NewDegrees">0</TextBox>
-        <TextBox Name="degreesY" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,55,5,5" TextChanged="NewDegrees">0</TextBox>
-        <TextBox Name="degreesZ" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,80,5,5" TextChanged="NewDegrees">0</TextBox>
         <Viewbox Stretch="Uniform">
             <Canvas Width="1000" Height="1000" Name="MainCanvas">
                 <Image Name="Viewport" Width="750" Height="750" Margin="125"
                        SizeChanged="ViewportSizeChanged"
-                       MouseWheel="ViewportZoom"/>
+                       MouseWheel="ViewportZoom"
+                       MouseMove="ViewportMouseMove"/>
             </Canvas>
         </Viewbox>
     </Grid>

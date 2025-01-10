@@ -91,6 +91,10 @@ namespace noughts_and_crosses
         /// <param name="colour">The colour to draw with</param>
         public void DrawLine(Vector3D p1, Vector3D p2, System.Drawing.Color colour)
         {
+            if (p1.Z < 0 || p2.Z < 0)
+            {
+                return;
+            }
             // Draw the line
             backingGraphics.DrawLine(new System.Drawing.Pen(colour, 1), new Point((int)p1.X, (int)p1.Y), new Point((int)p2.X, (int)p2.Y));
         }
