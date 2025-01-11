@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Drawing;
 using System.Reflection.Metadata;
+using System.Windows.Documents;
 
 namespace noughts_and_crosses
 {
@@ -51,6 +52,8 @@ namespace noughts_and_crosses
         {
             image = new ImageRenderer(width, height);
             controlImage.Source = image.bitmap;
+            OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
+            Camera.AspectRatio = (float)width / height;
             Render();
         }
 
@@ -142,7 +145,18 @@ namespace noughts_and_crosses
         public float FOV;
         public float NearClip;
         public float FarClip;
-        public float AspectRatio;
+
+
+        private float _aspectRatio;
+        public float AspectRatio
+        {
+            get => _aspectRatio;
+            set
+            {
+                _aspectRatio = value;
+                CalculateMatrices();
+            }
+        }
 
         private Vector3D _position;
         public Vector3D Position
@@ -183,7 +197,7 @@ namespace noughts_and_crosses
             FOV = fov;
             NearClip = nearClip;
             FarClip = farClip;
-            AspectRatio = aspectRatio;
+            _aspectRatio = aspectRatio;
             _position = position;
             _rotation = rotation;
             CalculateMatrices();

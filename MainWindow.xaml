@@ -5,15 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:noughts_and_crosses"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1000">
-    <Grid Background="Black">
-        <Viewbox Stretch="Uniform">
-            <Canvas Width="1000" Height="1000" Name="MainCanvas">
-                <Image Name="Viewport" Width="750" Height="750" Margin="125"
-                       SizeChanged="ViewportSizeChanged"
-                       MouseWheel="ViewportZoom"
-                       MouseMove="ViewportMouseMove"/>
-            </Canvas>
-        </Viewbox>
-    </Grid>
+        Title="MainWindow" Width="1000" Height="1000">
+    <Image Name="Viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Fill"
+           SizeChanged="ViewportSizeChanged"
+           MouseWheel="ViewportZoom"
+           MouseMove="ViewportMouseMove"/>
 </Window>

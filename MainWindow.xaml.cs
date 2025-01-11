@@ -37,7 +37,7 @@ namespace noughts_and_crosses
 
         public void ViewportZoom(object sender, MouseWheelEventArgs e)
         {
-            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV) * e.Delta / 120f;
+            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV) * -e.Delta / 120f;
             Vector3D delta = (Vector3D)(scene.Camera.Rotation * new Vector3D(0.0f, 0.0f, zoomDistance) * scene.Camera.Rotation.Conjugate());
             scene.Camera.Position = scene.Camera.Position + delta;
             scene.Render();
@@ -53,7 +53,6 @@ namespace noughts_and_crosses
                 {
                     // find delta theta
                     Vector delta = lastMouseAngles - angles;
-                    Debug.WriteLine(delta.X + " " + delta.Y);
                     // rotate the camera by delta theta
                     Quaternion rotation = Quaternion.RotationY(-(float)delta.X) * Quaternion.RotationX(-(float)delta.Y);
                     scene.Camera.Rotation = Quaternion.Normalise(rotation * scene.Camera.Rotation);
