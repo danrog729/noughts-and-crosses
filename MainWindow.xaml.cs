@@ -21,7 +21,7 @@ namespace noughts_and_crosses
     public partial class MainWindow : Window
     {
         Scene3D scene;
-        Point lastMousePos;
+        Vector lastMouseAngles;
         bool mouseDownLast = false;
 
         public MainWindow()
@@ -32,35 +32,40 @@ namespace noughts_and_crosses
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            scene.NewSize((int)Viewport.ActualWidth, (int)Viewport.ActualHeight);
+            scene.NewSize((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
         }
 
         public void ViewportZoom(object sender, MouseWheelEventArgs e)
         {
-            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV);
-            Vector3D delta = (Vector3D)(scene.Camera.Rotation * new Vector3D(0.0f, 0.0f, -zoomDistance * e.Delta / 120));
+            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV) * e.Delta / 120f;
+            Vector3D delta = (Vector3D)(scene.Camera.Rotation * new Vector3D(0.0f, 0.0f, zoomDistance) * scene.Camera.Rotation.Conjugate());
             scene.Camera.Position = scene.Camera.Position + delta;
             scene.Render();
         }
 
         public void ViewportMouseMove(object sender, MouseEventArgs e)
         {
-            //if (e.LeftButton.Equals(MouseButtonState.Pressed))
-            //{
-            //    Point currentPos = e.GetPosition(Viewport);
-            //    if (mouseDownLast)
-            //    {
-            //        Vector delta = currentPos - lastMousePos;
-            //        scene.Camera.Rotation = new Vector3D(scene.Camera.Rotation.X + (float)delta.Y * 0.001f, scene.Camera.Rotation.Y + (float)delta.X * 0.001f, scene.Camera.Rotation.Z);
-            //        scene.Render();
-            //    }
-            //    lastMousePos = currentPos;
-            //    mouseDownLast = true;
-            //}
-            //else
-            //{
-            //    mouseDownLast = false;
-            //}
+            if (e.LeftButton.Equals(MouseButtonState.Pressed))
+            {
+                Point currentPos = e.GetPosition(Viewport);
+                Vector angles = new Vector(scene.Camera.FOV * (currentPos.X / Viewport.ActualWidth), scene.Camera.VerticalFOV * (currentPos.Y / Viewport.ActualHeight));
+                if (mouseDownLast)
+                {
+                    // find delta theta
+                    Vector delta = lastMouseAngles - angles;
+                    Debug.WriteLine(delta.X + " " + delta.Y);
+                    // rotate the camera by delta theta
+                    Quaternion rotation = Quaternion.RotationY(-(float)delta.X) * Quaternion.RotationX(-(float)delta.Y);
+                    scene.Camera.Rotation = Quaternion.Normalise(rotation * scene.Camera.Rotation);
+                    scene.Render();
+                }
+                mouseDownLast = true;
+                lastMouseAngles = angles;
+            }
+            else
+            {
+                mouseDownLast = false;
+            }
         }
     }
 }
