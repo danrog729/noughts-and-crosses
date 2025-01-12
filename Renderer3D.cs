@@ -1,5 +1,6 @@
 ﻿using noughts_and_crosses;
 using System.CodeDom;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection.Metadata;
 using System.Windows.Documents;
@@ -25,27 +26,62 @@ namespace noughts_and_crosses
 
             Objects.Add(new Object3D() 
             { 
-                Scale = new Vector3D(0.5f, 0.5f, 0.5f) 
+                Scale = new Vector3D(0.5f, 0.5f, 0.5f),
             });
-
             Objects.Add(new Object3D()
             {
                 Position = new Vector3D(-0.5f, -0.1f, 0.5f),
-                Scale = new Vector3D(0.25f, 0.25f, 0.25f)
+                Scale = new Vector3D(0.25f, 0.25f, 0.25f),
             });
 
             Objects.Add(new Object3D()
             {
                 Position = new Vector3D(-0.5f, 0.5f, 0.5f),
                 Rotation = new Quaternion(0.42f, 0.54f, 0.67f, -0.28f),
-                Scale = new Vector3D(0.125f, 0.25f, 0.125f)
+                Scale = new Vector3D(0.125f, 0.25f, 0.125f),
+            });
+
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(1.0f, 0.0f, 0.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Red
+            });
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(0.0f, 1.0f, 0.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Green
+            });
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(0.0f, 0.0f, 1.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Blue
+            });
+
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(1.0f, 0.0f, 0.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Red
+            });
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(0.0f, 1.0f, 0.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Green
+            });
+            Objects.Add(new Object3D()
+            {
+                Position = new Vector3D(0.0f, 0.0f, 1.0f),
+                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
+                colour = Color.Blue
             });
 
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
             Wireframe = true;
             image.showDepthMap = false;
-
-            Render();
         }
 
         public void NewSize(int width, int height, ref System.Windows.Controls.Image controlImage)

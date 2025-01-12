@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 using System.Text;
@@ -28,6 +29,7 @@ namespace noughts_and_crosses
         {
             InitializeComponent();
             scene = new Scene3D(ref Viewport);
+            scene.Render();
         }
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
@@ -51,10 +53,11 @@ namespace noughts_and_crosses
                 Vector angles = new Vector(scene.Camera.FOV * (currentPos.X / Viewport.ActualWidth), scene.Camera.VerticalFOV * (currentPos.Y / Viewport.ActualHeight));
                 if (mouseDownLast)
                 {
-                    // find delta theta
                     Vector delta = lastMouseAngles - angles;
-                    // rotate the camera by delta theta
-                    Quaternion rotation = Quaternion.RotationY(-(float)delta.X) * Quaternion.RotationX(-(float)delta.Y);
+                    Quaternion right = scene.Camera.Rotation * new Vector3D(0.0f, 1.0f, 0.0f);
+                    scene.Camera.Rotation = Quaternion.Normalise(Quaternion.FromAxisAngle((Vector3D)right, -(float)delta.X) * scene.Camera.Rotation);
+                    Quaternion up = scene.Camera.Rotation * new Vector3D(1.0f, 0.0f, 0.0f);
+                    Quaternion rotation = Quaternion.FromAxisAngle((Vector3D)up, -(float)delta.Y);
                     scene.Camera.Rotation = Quaternion.Normalise(rotation * scene.Camera.Rotation);
                     scene.Render();
                 }
