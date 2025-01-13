@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography.Xml;
 using System.Security.Policy;
@@ -22,8 +23,12 @@ namespace noughts_and_crosses
     public partial class MainWindow : Window
     {
         Scene3D scene;
-        Point lastMousePos;
+        System.Windows.Point lastMousePos;
         bool mouseDownLast = false;
+        bool rightMousePressedLast = false;
+
+        PlayerOrientedBoard board;
+        int currentPlayer = 1;
 
         public MainWindow()
         {
@@ -33,7 +38,7 @@ namespace noughts_and_crosses
             int playerCount = 3;
             int size = 3;
             int dimensions = 3;
-            PlayerOrientedBoard board = new PlayerOrientedBoard(playerCount, size, dimensions);
+            board = new PlayerOrientedBoard(size, dimensions, playerCount);
 
             Object3D root = new Object3D()
             {
@@ -82,7 +87,7 @@ namespace noughts_and_crosses
         {
             if (e.RightButton.Equals(MouseButtonState.Pressed))
             {
-                Point currentPos = e.GetPosition(Viewport);
+                System.Windows.Point currentPos = e.GetPosition(Viewport);
                 float angle = -(float)Math.Sqrt((currentPos.X - lastMousePos.X) * (currentPos.X - lastMousePos.X) + (currentPos.Y - lastMousePos.Y) * (currentPos.Y - lastMousePos.Y));
                 float deltaX = (float)(lastMousePos.X - currentPos.X);
                 float deltaY = (float)(lastMousePos.Y - currentPos.Y);
@@ -118,6 +123,80 @@ namespace noughts_and_crosses
             else
             {
                 mouseDownLast = false;
+            }
+        }
+
+        public void ViewportMouseUp(object sender, MouseEventArgs e)
+        {
+            if (rightMousePressedLast && scene.rootObject != null)
+            {
+                // find which object has been clicked on
+                System.Windows.Point position = e.GetPosition(Viewport);
+                Object3D? clickedObject = scene.FindObjectAtPixel((int)position.X, (int)position.Y);
+                if (clickedObject != null)
+                {
+                    int boardIndex = scene.rootObject.children.IndexOf(clickedObject);
+                    if (board[boardIndex] != 0)
+                    {
+                        return;
+                    }
+                    board[boardIndex] = currentPlayer;
+
+                    switch (currentPlayer)
+                    {
+                        case 1:
+                            clickedObject.children.Add(new ObjectCross()
+                            {
+                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
+                                colour = System.Drawing.Color.Red
+                            }); break;
+                        case 2:
+                            clickedObject.children.Add(new ObjectNought()
+                            {
+                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
+                                colour = System.Drawing.Color.Green
+                            }); break;
+                        case 3:
+                            clickedObject.children.Add(new ObjectTetrahedron()
+                            {
+                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
+                                colour = System.Drawing.Color.Blue
+                            }); break;
+                    }
+  
+                    if (board.WinExists(boardIndex, true) != 0 && board.winDirections != null)
+                    {
+                        foreach (WinDirection winDirection in board.winDirections)
+                        {
+                            if (winDirection.win == true)
+                            {
+                                int[] rootDimIndex = board.DimensionalIndex(winDirection.rootIndex);
+                                int[] finalDimIndex = board.DimensionalIndex(winDirection.rootIndex + (board.Size - 1) * winDirection.indexOffset);
+                                scene.rootObject.children.Add(new ObjectLine(
+                                    new Vector3D(
+                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
+                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f,
+                                        board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
+                                    new Vector3D(
+                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
+                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f,
+                                        board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
+                                        ));
+                            }
+                        }
+                    }
+                    scene.Render();
+                    currentPlayer = currentPlayer % board.PlayerCount + 1;
+                }
+                rightMousePressedLast = false;
+            }
+        }
+
+        public void ViewportMouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton.Equals(MouseButtonState.Pressed))
+            {
+                rightMousePressedLast = true;
             }
         }
     }

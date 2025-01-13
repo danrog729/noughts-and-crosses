@@ -3,7 +3,9 @@ using System.CodeDom;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows.Documents;
+using System.Windows.Media.Imaging;
 
 namespace noughts_and_crosses
 {
@@ -56,7 +58,7 @@ namespace noughts_and_crosses
         {
             foreach (Object3D child in obj.children)
             {
-                RenderObject(parentToImage * obj.LocalToWorldMatrix, child);
+                RenderBranch(parentToImage * obj.LocalToWorldMatrix, child);
             }
             RenderObject(parentToImage, obj);
         }
@@ -97,6 +99,75 @@ namespace noughts_and_crosses
                         obj.colour);
                 }
             }
+        }
+
+        public Object3D? FindObjectAtPixel(int x, int y)
+        {
+            Matrix4D WorldToImageMatrix = OrthoToImageMatrix * Camera.OrthographicMatrix * Camera.PerspectiveMatrix * Matrix4D.ScaleMatrix(new Vector3D(1.0f, 1.0f, -1.0f)) * Camera.CameraSpaceMatrix;
+            if (rootObject == null)
+            {
+                return null;
+            }
+            Object3D? closest = null;
+            float closestDepth = 1.0f;
+            
+            foreach (Object3D child in rootObject.children)
+            {
+                (Object3D?, float) result = PixelSearchBranch(WorldToImageMatrix * rootObject.LocalToWorldMatrix, child, x, y);
+                if (result.Item2 < closestDepth)
+                {
+                    closestDepth = result.Item2;
+                    closest = child;
+                }
+            }
+
+            return closest;
+        }
+
+        private (Object3D?, float) PixelSearchBranch(Matrix4D parentToImage, Object3D root, int x, int y)
+        {
+            Object3D? closest = null;
+            float closestDepth = 1.0f;
+            
+            for (int faceIndex = 0; faceIndex < root.Faces.Length; faceIndex++)
+            {
+                Vector4D vertex1 = root.Vertices[root.Faces[faceIndex].Item1];
+                Vector4D vertex2 = root.Vertices[root.Faces[faceIndex].Item2];
+                Vector4D vertex3 = root.Vertices[root.Faces[faceIndex].Item3];
+                vertex1 = parentToImage * root.LocalToWorldMatrix * vertex1;
+                vertex2 = parentToImage * root.LocalToWorldMatrix * vertex2;
+                vertex3 = parentToImage * root.LocalToWorldMatrix * vertex3;
+
+                float fullArea = Edge((Vector3D)(vertex1 / vertex1.W), (Vector3D)(vertex2 / vertex2.W), (Vector3D)(vertex3 / vertex3.W));
+                if (fullArea < 0.0f) { continue; }
+                int area3 = Edge((Vector3D)(vertex1 / vertex1.W), (Vector3D)(vertex2 / vertex2.W), new Vector3D(x, y, 0));
+                if (area3 < 0.0f) { continue; }
+                int area2 = Edge((Vector3D)(vertex1 / vertex1.W), new Vector3D(x, y, 0), (Vector3D)(vertex3 / vertex3.W));
+                if (area2 < 0.0f) { continue; }
+                int area1 = Edge(new Vector3D(x, y, 0), (Vector3D)(vertex2 / vertex2.W), (Vector3D)(vertex3 / vertex3.W));
+                if (area1 < 0.0f) { continue; }
+
+                // pixel inside triangle
+                float depth = ((float)area1 / fullArea) * vertex1.Z / vertex1.W + ((float)area2 / fullArea) * vertex2.Z / vertex2.W + ((float)area3 / fullArea) * vertex3.Z / vertex3.W;
+                closestDepth = depth;
+                closest = root;
+                break;
+            }
+            foreach (Object3D child in root.children)
+            {
+                (Object3D?, float) result = PixelSearchBranch(parentToImage * root.LocalToWorldMatrix, child, x, y);
+                if (result.Item2 < closestDepth)
+                {
+                    closestDepth = result.Item2;
+                    closest = child;
+                }
+            }
+            return (closest, closestDepth);
+        }
+
+        private int Edge(Vector3D p1, Vector3D p2, Vector3D p3)
+        {
+            return ((int)p2.X - (int)p1.X) * ((int)p3.Y - (int)p1.Y) - ((int)p2.Y - (int)p1.Y) * ((int)p3.X - (int)p1.X);
         }
 
         public static float DegreesToRadians(float degrees)
@@ -218,7 +289,7 @@ namespace noughts_and_crosses
 
     class Object3D
     {
-        private Vector3D _position;
+        protected Vector3D _position;
         public Vector3D Position
         {
             get
@@ -232,7 +303,7 @@ namespace noughts_and_crosses
             }
         }
 
-        private Quaternion _rotation;
+        protected Quaternion _rotation;
         public Quaternion Rotation
         {
             get
@@ -246,7 +317,7 @@ namespace noughts_and_crosses
             }
         }
 
-        private Vector3D _scale;
+        protected Vector3D _scale;
         public Vector3D Scale
         {
             get
@@ -267,7 +338,6 @@ namespace noughts_and_crosses
         public (int, int, int)[] Faces;
         public Color colour;
 
-        public Object3D? parent;
         public List<Object3D> children;
 
         public Object3D()
@@ -312,11 +382,143 @@ namespace noughts_and_crosses
             children = new List<Object3D>();
         }
 
-        private void CalculateMatrices()
+        protected void CalculateMatrices()
         {
             Matrix4D translationMatrix = Matrix4D.TranslationMatrix(Position);
             Matrix4D scaleMatrix = Matrix4D.ScaleMatrix(Scale);
             LocalToWorldMatrix = translationMatrix * Quaternion.ToRotationMatrix(Rotation) * scaleMatrix;
+        }
+    }
+
+    class ObjectCross : Object3D
+    {
+        public ObjectCross()
+        {
+            _position = new Vector3D(0.0f, 0.0f, 0.0f);
+            _rotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+            _scale = new Vector3D(1.0f, 1.0f, 1.0f);
+            CalculateMatrices();
+
+            Vertices =
+                [
+                    new Vector3D(-1.0f, -1.0f, -1.0f),
+                    new Vector3D(-1.0f, -1.0f,  1.0f),
+                    new Vector3D(-1.0f,  1.0f, -1.0f),
+                    new Vector3D(-1.0f,  1.0f,  1.0f),
+                    new Vector3D( 1.0f, -1.0f, -1.0f),
+                    new Vector3D( 1.0f, -1.0f,  1.0f),
+                    new Vector3D( 1.0f,  1.0f, -1.0f),
+                    new Vector3D( 1.0f,  1.0f,  1.0f),
+                ];
+            Edges =
+                [
+                    (0, 7),
+                    (1, 6),
+                    (2, 5),
+                    (3, 4)
+                ];
+            Faces = [];
+
+            colour = Color.White;
+            children = new List<Object3D>();
+        }
+    }
+
+    class ObjectNought : Object3D
+    {
+        public ObjectNought()
+        {
+            _position = new Vector3D(0.0f, 0.0f, 0.0f);
+            _rotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+            _scale = new Vector3D(1.0f, 1.0f, 1.0f);
+            CalculateMatrices();
+
+            Vertices =
+                [
+                    new Vector3D(0.0f, -1.0f, 0.0f),
+                    new Vector3D(0.70711f, -0.70711f, 0.0f),
+                    new Vector3D(1.0f, 0.0f, 0.0f),
+                    new Vector3D(0.70711f, 0.70711f, 0.0f),
+                    new Vector3D(0.0f,  1.0f,  0.0f),
+                    new Vector3D(-0.70711f, 0.70711f, 0.0f),
+                    new Vector3D(-1.0f, 0.0f, 0.0f),
+                    new Vector3D(-0.70711f, -0.70711f, 0.0f),
+
+                    new Vector3D(0.70711f, 0.0f, -0.70711f),
+                    new Vector3D(0.0f, 0.0f, -1.0f),
+                    new Vector3D(-0.70711f, 0.0f, -0.70711f),
+                    new Vector3D(-0.70711f, 0.0f, 0.70711f),
+                    new Vector3D(0.0f, 0.0f, 1.0f),
+                    new Vector3D(0.70711f, 0.0f, 0.70711f),
+
+                    new Vector3D(0.0f, -0.70711f, -0.70711f),
+                    new Vector3D(0.0f, 0.70711f, -0.70711f),
+                    new Vector3D(0.0f, 0.70711f, 0.70711f),
+                    new Vector3D(0.0f, -0.70711f, 0.70711f)
+                ];
+            Edges =
+                [
+                    (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 0),
+                    (2, 8), (8, 9), (9, 10), (10, 6), (6, 11), (11, 12), (12, 13), (13, 2),
+                    (0, 14), (14, 9), (9, 15), (15, 4), (4, 16), (16, 12), (12, 17), (17, 0)
+                ];
+            Faces = [];
+
+            colour = Color.White;
+            children = new List<Object3D>();
+        }
+    }
+
+    class ObjectTetrahedron : Object3D
+    {
+        public ObjectTetrahedron()
+        {
+            _position = new Vector3D(0.0f, 0.0f, 0.0f);
+            _rotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+            _scale = new Vector3D(1.0f, 1.0f, 1.0f);
+            CalculateMatrices();
+
+            Vertices =
+                [
+                    new Vector3D(0.0f, 0.86603f, -0.8165f),
+                    new Vector3D(-1.0f, -0.86603f, -0.8165f),
+                    new Vector3D(1.0f, -0.86603f, -0.8165f),
+                    new Vector3D(0.0f, -0.28868f, 0.8165f),
+                ];
+            Edges =
+                [
+                    (0, 1), (0, 2), (0, 3),
+                    (1, 2), (1, 3),
+                    (2, 3)
+                ];
+            Faces = [];
+
+            colour = Color.White;
+            children = new List<Object3D>();
+        }
+    }
+
+    class ObjectLine : Object3D
+    {
+        public ObjectLine(Vector3D point1, Vector3D point2)
+        {
+            _position = new Vector3D(0.0f, 0.0f, 0.0f);
+            _rotation = new Quaternion(1.0f, 0.0f, 0.0f, 0.0f);
+            _scale = new Vector3D(1.0f, 1.0f, 1.0f);
+            CalculateMatrices();
+
+            Vertices =
+                [
+                    point1, point2
+                ];
+            Edges =
+                [
+                    (0, 1)
+                ];
+            Faces = [];
+
+            colour = Color.White;
+            children = new List<Object3D>();
         }
     }
 
