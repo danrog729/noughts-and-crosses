@@ -10,7 +10,7 @@ namespace noughts_and_crosses
     class Scene3D
     {
         public Camera3D Camera;
-        public List<Object3D> Objects;
+        public Object3D? rootObject;
         public bool Wireframe;
 
         private ImageRenderer image;
@@ -21,63 +21,7 @@ namespace noughts_and_crosses
             image = new ImageRenderer(750, 750);
             canvas.Source = image.bitmap;
 
-            Camera = new Camera3D(60.0f, 0.1f, 10.0f, 1.0f, new Vector3D(0.0f, 0.0f, 3.0f), new Quaternion(1.0f, 0.0f, 0.0f, 0.0f));
-            Objects = new List<Object3D>();
-
-            Objects.Add(new Object3D() 
-            { 
-                Scale = new Vector3D(0.5f, 0.5f, 0.5f),
-            });
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(-0.5f, -0.1f, 0.5f),
-                Scale = new Vector3D(0.25f, 0.25f, 0.25f),
-            });
-
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(-0.5f, 0.5f, 0.5f),
-                Rotation = new Quaternion(0.42f, 0.54f, 0.67f, -0.28f),
-                Scale = new Vector3D(0.125f, 0.25f, 0.125f),
-            });
-
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(1.0f, 0.0f, 0.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Red
-            });
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(0.0f, 1.0f, 0.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Green
-            });
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(0.0f, 0.0f, 1.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Blue
-            });
-
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(1.0f, 0.0f, 0.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Red
-            });
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(0.0f, 1.0f, 0.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Green
-            });
-            Objects.Add(new Object3D()
-            {
-                Position = new Vector3D(0.0f, 0.0f, 1.0f),
-                Scale = new Vector3D(0.1f, 0.1f, 0.1f),
-                colour = Color.Blue
-            });
+            Camera = new Camera3D(60.0f, 0.1f, 10.0f, 1.0f, new Vector3D(0.0f, 0.0f, 3.5f), new Quaternion(1.0f, 0.0f, 0.0f, 0.0f));
 
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
             Wireframe = true;
@@ -100,44 +44,59 @@ namespace noughts_and_crosses
 
             Matrix4D WorldToImageMatrix = OrthoToImageMatrix * Camera.OrthographicMatrix * Camera.PerspectiveMatrix * Matrix4D.ScaleMatrix(new Vector3D(1.0f, 1.0f, -1.0f)) * Camera.CameraSpaceMatrix;
 
-            foreach (Object3D obj in Objects)
+            if (rootObject != null)
             {
-                Matrix4D LocalToImageMatrix = WorldToImageMatrix * obj.LocalToWorldMatrix;
-                if (Wireframe)
+                RenderBranch(WorldToImageMatrix, rootObject);
+            }
+
+            image.UnlockBuffer();
+        }
+
+        private void RenderBranch(Matrix4D parentToImage, Object3D obj)
+        {
+            foreach (Object3D child in obj.children)
+            {
+                RenderObject(parentToImage * obj.LocalToWorldMatrix, child);
+            }
+            RenderObject(parentToImage, obj);
+        }
+
+        private void RenderObject(Matrix4D parentToImage, Object3D obj)
+        {
+            Matrix4D LocalToImageMatrix = parentToImage * obj.LocalToWorldMatrix;
+            if (Wireframe)
+            {
+                for (int edgeIndex = 0; edgeIndex < obj.Edges.Length; edgeIndex++)
                 {
-                    for (int edgeIndex = 0; edgeIndex < obj.Edges.Length; edgeIndex++)
-                    {
-                        (int, int) edge = obj.Edges[edgeIndex];
-                        Vector4D vertex1 = obj.Vertices[edge.Item1];
-                        Vector4D vertex2 = obj.Vertices[edge.Item2];
-                        vertex1 = LocalToImageMatrix * vertex1;
-                        vertex2 = LocalToImageMatrix * vertex2;
-                        image.DrawLine(
-                            new Vector3D(vertex1.X / vertex1.W, vertex1.Y / vertex1.W, vertex1.Z / vertex1.W), 
-                            new Vector3D(vertex2.X / vertex2.W, vertex2.Y / vertex2.W, vertex2.Z / vertex2.W), 
-                            obj.colour);
-                    }
-                }
-                else
-                {
-                    for (int faceIndex = 0; faceIndex < obj.Faces.Length; faceIndex++)
-                    {
-                        (int, int, int) face = obj.Faces[faceIndex];
-                        Vector4D vertex1 = obj.Vertices[face.Item1];
-                        Vector4D vertex2 = obj.Vertices[face.Item2];
-                        Vector4D vertex3 = obj.Vertices[face.Item3];
-                        vertex1 = LocalToImageMatrix * vertex1;
-                        vertex2 = LocalToImageMatrix * vertex2;
-                        vertex3 = LocalToImageMatrix * vertex3;
-                        image.DrawTriangle(
-                            new Vector3D(vertex1.X / vertex1.W, vertex1.Y / vertex1.W, vertex1.Z / vertex1.W),
-                            new Vector3D(vertex2.X / vertex2.W, vertex2.Y / vertex2.W, vertex2.Z / vertex2.W),
-                            new Vector3D(vertex3.X / vertex3.W, vertex3.Y / vertex3.W, vertex3.Z / vertex3.W),
-                            obj.colour);
-                    }
+                    (int, int) edge = obj.Edges[edgeIndex];
+                    Vector4D vertex1 = obj.Vertices[edge.Item1];
+                    Vector4D vertex2 = obj.Vertices[edge.Item2];
+                    vertex1 = LocalToImageMatrix * vertex1;
+                    vertex2 = LocalToImageMatrix * vertex2;
+                    image.DrawLine(
+                        new Vector3D(vertex1.X / vertex1.W, vertex1.Y / vertex1.W, vertex1.Z / vertex1.W),
+                        new Vector3D(vertex2.X / vertex2.W, vertex2.Y / vertex2.W, vertex2.Z / vertex2.W),
+                        obj.colour);
                 }
             }
-            image.UnlockBuffer();
+            else
+            {
+                for (int faceIndex = 0; faceIndex < obj.Faces.Length; faceIndex++)
+                {
+                    (int, int, int) face = obj.Faces[faceIndex];
+                    Vector4D vertex1 = obj.Vertices[face.Item1];
+                    Vector4D vertex2 = obj.Vertices[face.Item2];
+                    Vector4D vertex3 = obj.Vertices[face.Item3];
+                    vertex1 = LocalToImageMatrix * vertex1;
+                    vertex2 = LocalToImageMatrix * vertex2;
+                    vertex3 = LocalToImageMatrix * vertex3;
+                    image.DrawTriangle(
+                        new Vector3D(vertex1.X / vertex1.W, vertex1.Y / vertex1.W, vertex1.Z / vertex1.W),
+                        new Vector3D(vertex2.X / vertex2.W, vertex2.Y / vertex2.W, vertex2.Z / vertex2.W),
+                        new Vector3D(vertex3.X / vertex3.W, vertex3.Y / vertex3.W, vertex3.Z / vertex3.W),
+                        obj.colour);
+                }
+            }
         }
 
         public static float DegreesToRadians(float degrees)
@@ -308,6 +267,9 @@ namespace noughts_and_crosses
         public (int, int, int)[] Faces;
         public Color colour;
 
+        public Object3D? parent;
+        public List<Object3D> children;
+
         public Object3D()
         {
             _position = new Vector3D(0.0f, 0.0f, 0.0f);
@@ -347,6 +309,7 @@ namespace noughts_and_crosses
                 ];
 
             colour = Color.White;
+            children = new List<Object3D>();
         }
 
         private void CalculateMatrices()

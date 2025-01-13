@@ -6,8 +6,16 @@
         xmlns:local="clr-namespace:noughts_and_crosses"
         mc:Ignorable="d"
         Title="MainWindow" Width="1000" Height="1000">
-    <Image Name="Viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Stretch="Fill"
-           SizeChanged="ViewportSizeChanged"
-           MouseWheel="ViewportZoom"
-           MouseMove="ViewportMouseMove"/>
+    <Grid Background="Black">
+        <Viewbox Stretch="Uniform">
+            <Canvas Width="1000" Height="1000">
+                <Image Name="Viewport" Width="750" Height="750" Margin="125"
+                       SizeChanged="ViewportSizeChanged"
+                       MouseMove="ViewportMouseMove"/>
+                <Ellipse Width="850" Height="850" Stroke="White" StrokeThickness="5" Margin="75"/>
+                <Ellipse Width="862.5" Height="862.5" Stroke="Gray" StrokeThickness="2" StrokeDashArray="4, 4" Margin="68.75"/>
+                <Ellipse Width="900" Height="900" Stroke="White" StrokeThickness="15" Margin="50"/>
+            </Canvas>
+        </Viewbox>
+    </Grid>
 </Window>

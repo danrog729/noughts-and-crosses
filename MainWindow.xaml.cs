@@ -22,13 +22,46 @@ namespace noughts_and_crosses
     public partial class MainWindow : Window
     {
         Scene3D scene;
-        Vector lastMouseAngles;
+        Point lastMousePos;
         bool mouseDownLast = false;
 
         public MainWindow()
         {
             InitializeComponent();
             scene = new Scene3D(ref Viewport);
+
+            int playerCount = 3;
+            int size = 3;
+            int dimensions = 3;
+            PlayerOrientedBoard board = new PlayerOrientedBoard(playerCount, size, dimensions);
+
+            Object3D root = new Object3D()
+            {
+                Scale = new Vector3D(
+                    1.0f,
+                    1.0f,
+                    dimensions >= 3 ? 1.0f : 1.0f / size
+                    )
+            };
+            scene.rootObject = root;
+            for (int cell = 0; cell < board.Length; cell++)
+            {
+                int[] dimIndex = board.DimensionalIndex(cell);
+                Object3D obj = new Object3D()
+                {
+                    Position = new Vector3D(
+                        -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[0] * 2,
+                        -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[1] * 2,
+                        dimensions >= 3 ? -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[2] * 2 : 0.0f),
+                    Scale = new Vector3D(
+                        1.0f / size,
+                        1.0f / size,
+                        dimensions >= 3 ? 1.0f / size : 1.0f),
+                    colour = System.Drawing.Color.Gray
+                };
+                scene.rootObject.children.Add(obj);
+            }
+
             scene.Render();
         }
 
@@ -47,22 +80,40 @@ namespace noughts_and_crosses
 
         public void ViewportMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton.Equals(MouseButtonState.Pressed))
+            if (e.RightButton.Equals(MouseButtonState.Pressed))
             {
                 Point currentPos = e.GetPosition(Viewport);
-                Vector angles = new Vector(scene.Camera.FOV * (currentPos.X / Viewport.ActualWidth), scene.Camera.VerticalFOV * (currentPos.Y / Viewport.ActualHeight));
+                float angle = -(float)Math.Sqrt((currentPos.X - lastMousePos.X) * (currentPos.X - lastMousePos.X) + (currentPos.Y - lastMousePos.Y) * (currentPos.Y - lastMousePos.Y));
+                float deltaX = (float)(lastMousePos.X - currentPos.X);
+                float deltaY = (float)(lastMousePos.Y - currentPos.Y);
+
+                Vector3D axis = new Vector3D(
+                    (float)Math.Sqrt(1.0f / (1 + deltaX * deltaX / deltaY / deltaY)),
+                    (float)Math.Sqrt(1.0f - 1.0f / (1 + deltaX * deltaX / deltaY / deltaY)),
+                    0.0f);
+
+                if (lastMousePos.X > currentPos.X)
+                {
+                    axis.X *= -1;
+                    angle *= -1;
+                }
+                if (lastMousePos.Y > currentPos.Y)
+                {
+                    axis.Y *= -1;
+                    angle *= -1;
+                }
+                angle *= 0.2f; // sensitivity
+                Quaternion rotation = Quaternion.FromAxisAngle(axis, angle);
                 if (mouseDownLast)
                 {
-                    Vector delta = lastMouseAngles - angles;
-                    Quaternion right = scene.Camera.Rotation * new Vector3D(0.0f, 1.0f, 0.0f);
-                    scene.Camera.Rotation = Quaternion.Normalise(Quaternion.FromAxisAngle((Vector3D)right, -(float)delta.X) * scene.Camera.Rotation);
-                    Quaternion up = scene.Camera.Rotation * new Vector3D(1.0f, 0.0f, 0.0f);
-                    Quaternion rotation = Quaternion.FromAxisAngle((Vector3D)up, -(float)delta.Y);
-                    scene.Camera.Rotation = Quaternion.Normalise(rotation * scene.Camera.Rotation);
-                    scene.Render();
+                    if (scene.rootObject != null)
+                    {
+                        scene.rootObject.Rotation = rotation * scene.rootObject.Rotation;
+                    }
                 }
                 mouseDownLast = true;
-                lastMouseAngles = angles;
+                lastMousePos = currentPos;
+                scene.Render();
             }
             else
             {
