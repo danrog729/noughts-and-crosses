@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="noughts_and_crosses.PlayerCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:noughts_and_crosses"
+             mc:Ignorable="d" 
+             d:DesignHeight="120" d:DesignWidth="360">
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Canvas Margin="5" Grid.Row="0" Grid.Column="0" Name="Icon" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged">Player</TextBox>
+        <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked">X</Button>
+        <Rectangle Margin="5" Grid.Row="1" Grid.Column="0" Fill="LightGray"></Rectangle>
+        <Rectangle Margin="5" Grid.Row="1" Grid.Column="1" Fill="LightGray"></Rectangle>
+        <Rectangle Margin="5" Grid.Row="1" Grid.Column="2" Fill="LightGray"></Rectangle>
+    </Grid>
+</UserControl>

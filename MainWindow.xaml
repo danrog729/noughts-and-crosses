@@ -5,19 +5,75 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:noughts_and_crosses"
         mc:Ignorable="d"
-        Title="Noughts And Crosses" Width="1000" Height="1000">
-    <Grid Background="Black">
-        <Viewbox Stretch="Uniform">
-            <Canvas Width="1000" Height="1000">
-                <Image Name="Viewport" Width="750" Height="750" Margin="125"
-                       SizeChanged="ViewportSizeChanged"
-                       MouseMove="ViewportMouseMove"
-                       MouseDown="ViewportMouseDown"
-                       MouseUp="ViewportMouseUp"/>
-                <Ellipse Width="850" Height="850" Stroke="White" StrokeThickness="5" Margin="75"/>
-                <Ellipse Width="862.5" Height="862.5" Stroke="Gray" StrokeThickness="2" StrokeDashArray="4, 4" Margin="68.75"/>
-                <Ellipse Width="900" Height="900" Stroke="White" StrokeThickness="15" Margin="50"/>
-            </Canvas>
-        </Viewbox>
+        Title="Noughts And Crosses" Width="1200" Height="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1" Margin="20, 10, 20, 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0">
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <TextBlock Grid.Column="0" Margin="5">Size:</TextBlock>
+                        <TextBox Name="SizeInput" Grid.Column="1" Margin="5" TextChanged="SizeTextChanged">3</TextBox>
+                    </DockPanel>
+                </Border>
+
+                <Border Grid.Column="1">
+                    <DockPanel HorizontalAlignment="Stretch">
+                        <TextBlock Grid.Column="0" Margin="5">Dimensions:</TextBlock>
+                        <TextBox Name="DimensionInput" Grid.Column="1" Margin="5" TextChanged="DimensionTextChanged">2</TextBox>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer Grid.Row="0" Grid.Column = "0" Grid.ColumnSpan="3">
+                    <StackPanel Name="PlayerCardContainer"/>
+                </ScrollViewer>
+
+                <Button Grid.Row="1" Grid.Column="0" Click="EasyBotAdded" Name="EasyBotButton">Add Easy Bot</Button>
+                <Button Grid.Row="1" Grid.Column="1" Click="MediumBotAdded" Name="MediumBotButton">Add Medium Bot</Button>
+                <Button Grid.Row="1" Grid.Column="2" Click="HardBotAdded" Name="HardBotButton">Add Hard Bot</Button>
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="PlayerAdded" Name="PlayerButton">Add Player</Button>
+                
+            </Grid>
+            
+            <Button Grid.Row="3" Margin="20" Click="GameStarted" Name="StartButton">Start Game</Button>
+            
+        </Grid>
+        
+        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
+            <Image Name="Viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    SizeChanged="ViewportSizeChanged"
+                    MouseMove="ViewportMouseMove"
+                    MouseDown="ViewportMouseDown"
+                    MouseUp="ViewportMouseUp"/>
+        </Canvas>
     </Grid>
 </Window>

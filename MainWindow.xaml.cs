@@ -22,65 +22,31 @@ namespace noughts_and_crosses
     /// </summary>
     public partial class MainWindow : Window
     {
-        Scene3D scene;
         System.Windows.Point lastMousePos;
         bool mouseDownLast = false;
-        bool rightMousePressedLast = false;
+        bool leftMousePressedLast = false;
 
-        PlayerOrientedBoard board;
-        int currentPlayer = 1;
+        GameManager gameManager;
+        List<Player> players = new List<Player>();
+        bool gameStarted = false;
+
+        string oldSizeText = "3";
+        string oldDimensionText = "2";
 
         public MainWindow()
         {
             InitializeComponent();
-            scene = new Scene3D(ref Viewport);
 
-            int playerCount = 3;
             int size = 3;
-            int dimensions = 3;
-            board = new PlayerOrientedBoard(size, dimensions, playerCount);
+            int dimensions = 2;
 
-            Object3D root = new Object3D()
-            {
-                Scale = new Vector3D(
-                    1.0f,
-                    1.0f,
-                    dimensions >= 3 ? 1.0f : 1.0f / size
-                    )
-            };
-            scene.rootObject = root;
-            for (int cell = 0; cell < board.Length; cell++)
-            {
-                int[] dimIndex = board.DimensionalIndex(cell);
-                Object3D obj = new Object3D()
-                {
-                    Position = new Vector3D(
-                        -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[0] * 2,
-                        -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[1] * 2,
-                        dimensions >= 3 ? -1.0f + (1.0f / size) + (1.0f / size) * dimIndex[2] * 2 : 0.0f),
-                    Scale = new Vector3D(
-                        1.0f / size,
-                        1.0f / size,
-                        dimensions >= 3 ? 1.0f / size : 1.0f),
-                    colour = System.Drawing.Color.Gray
-                };
-                scene.rootObject.children.Add(obj);
-            }
-
-            scene.Render();
+            gameManager = new GameManager(size, dimensions, players, ref Viewport);
+            gameManager.Render();
         }
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            scene.NewSize((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
-        }
-
-        public void ViewportZoom(object sender, MouseWheelEventArgs e)
-        {
-            float zoomDistance = 1.0f / 10.0f * (float)Scene3D.TanDegrees(scene.Camera.FOV) * -e.Delta / 120f;
-            Vector3D delta = (Vector3D)(scene.Camera.Rotation * new Vector3D(0.0f, 0.0f, zoomDistance) * scene.Camera.Rotation.Conjugate());
-            scene.Camera.Position = scene.Camera.Position + delta;
-            scene.Render();
+            gameManager.ViewSizeChanged((int)e.NewSize.Width, (int)e.NewSize.Height, ref Viewport);
         }
 
         public void ViewportMouseMove(object sender, MouseEventArgs e)
@@ -88,37 +54,15 @@ namespace noughts_and_crosses
             if (e.RightButton.Equals(MouseButtonState.Pressed))
             {
                 System.Windows.Point currentPos = e.GetPosition(Viewport);
-                float angle = -(float)Math.Sqrt((currentPos.X - lastMousePos.X) * (currentPos.X - lastMousePos.X) + (currentPos.Y - lastMousePos.Y) * (currentPos.Y - lastMousePos.Y));
-                float deltaX = (float)(lastMousePos.X - currentPos.X);
-                float deltaY = (float)(lastMousePos.Y - currentPos.Y);
-
-                Vector3D axis = new Vector3D(
-                    (float)Math.Sqrt(1.0f / (1 + deltaX * deltaX / deltaY / deltaY)),
-                    (float)Math.Sqrt(1.0f - 1.0f / (1 + deltaX * deltaX / deltaY / deltaY)),
-                    0.0f);
-
-                if (lastMousePos.X > currentPos.X)
-                {
-                    axis.X *= -1;
-                    angle *= -1;
-                }
-                if (lastMousePos.Y > currentPos.Y)
-                {
-                    axis.Y *= -1;
-                    angle *= -1;
-                }
-                angle *= 0.2f; // sensitivity
-                Quaternion rotation = Quaternion.FromAxisAngle(axis, angle);
                 if (mouseDownLast)
                 {
-                    if (scene.rootObject != null)
-                    {
-                        scene.rootObject.Rotation = rotation * scene.rootObject.Rotation;
-                    }
+                    float deltaX = (float)(currentPos.X - lastMousePos.X);
+                    float deltaY = (float)(currentPos.Y - lastMousePos.Y);
+
+                    gameManager.MouseMoved(deltaX, deltaY);
                 }
                 mouseDownLast = true;
                 lastMousePos = currentPos;
-                scene.Render();
             }
             else
             {
@@ -128,76 +72,231 @@ namespace noughts_and_crosses
 
         public void ViewportMouseUp(object sender, MouseEventArgs e)
         {
-            if (rightMousePressedLast && scene.rootObject != null)
+            if (gameStarted && leftMousePressedLast)
             {
-                // find which object has been clicked on
+                // handle the placement
                 System.Windows.Point position = e.GetPosition(Viewport);
-                Object3D? clickedObject = scene.FindObjectAtPixel((int)position.X, (int)position.Y);
-                if (clickedObject != null)
-                {
-                    int boardIndex = scene.rootObject.children.IndexOf(clickedObject);
-                    if (board[boardIndex] != 0)
-                    {
-                        return;
-                    }
-                    board[boardIndex] = currentPlayer;
+                gameManager.MouseClicked((int)position.X, (int)position.Y);
+                leftMousePressedLast = false;
 
-                    switch (currentPlayer)
-                    {
-                        case 1:
-                            clickedObject.children.Add(new ObjectCross()
-                            {
-                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
-                                colour = System.Drawing.Color.Red
-                            }); break;
-                        case 2:
-                            clickedObject.children.Add(new ObjectNought()
-                            {
-                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
-                                colour = System.Drawing.Color.Green
-                            }); break;
-                        case 3:
-                            clickedObject.children.Add(new ObjectTetrahedron()
-                            {
-                                Scale = new Vector3D(0.8f, 0.8f, 0.8f),
-                                colour = System.Drawing.Color.Blue
-                            }); break;
-                    }
-  
-                    if (board.WinExists(boardIndex, true) != 0 && board.winDirections != null)
-                    {
-                        foreach (WinDirection winDirection in board.winDirections)
-                        {
-                            if (winDirection.win == true)
-                            {
-                                int[] rootDimIndex = board.DimensionalIndex(winDirection.rootIndex);
-                                int[] finalDimIndex = board.DimensionalIndex(winDirection.rootIndex + (board.Size - 1) * winDirection.indexOffset);
-                                scene.rootObject.children.Add(new ObjectLine(
-                                    new Vector3D(
-                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
-                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f,
-                                        board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
-                                    new Vector3D(
-                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
-                                        -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f,
-                                        board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
-                                        ));
-                            }
-                        }
-                    }
-                    scene.Render();
-                    currentPlayer = currentPlayer % board.PlayerCount + 1;
+                // if wins, end the game
+                if (gameManager.GameFinished)
+                {
+                    GameEnded();
                 }
-                rightMousePressedLast = false;
             }
         }
 
         public void ViewportMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton.Equals(MouseButtonState.Pressed))
+            if (gameStarted && e.LeftButton.Equals(MouseButtonState.Pressed))
             {
-                rightMousePressedLast = true;
+                leftMousePressedLast = true;
             }
+        }
+
+        public void SizeTextChanged(object sender, EventArgs e)
+        {
+            if (gameManager == null)
+            {
+                return;
+            }
+            if (SizeInput.Text == "")
+            {
+                gameManager.Size = 1;
+                oldSizeText = SizeInput.Text;
+                gameManager.Render();
+            }
+            if (Int32.TryParse(SizeInput.Text, out int value))
+            {
+                gameManager.Size = value;
+                oldSizeText = SizeInput.Text;
+                gameManager.Render();
+            }
+            else
+            {
+                SizeInput.Text = oldSizeText;
+            }
+        }
+
+        public void DimensionTextChanged(object sender, EventArgs e)
+        {
+            if (gameManager == null)
+            {
+                return;
+            }
+            if (DimensionInput.Text == "")
+            {
+                gameManager.Dimensions = 1;
+                oldDimensionText = DimensionInput.Text;
+                gameManager.Render();
+            }
+            if (Int32.TryParse(DimensionInput.Text, out int value))
+            {
+                if (value > 3)
+                {
+                    gameManager.Dimensions = 3;
+                    DimensionInput.Text = "3";
+                    oldDimensionText = "3";
+                }
+                else
+                {
+                    gameManager.Dimensions = value;
+                    oldDimensionText = DimensionInput.Text;
+                }
+                gameManager.Render();
+            }
+            else
+            {
+                DimensionInput.Text = oldDimensionText;
+            }
+        }
+
+        private void EasyBotAdded(object sender, EventArgs e)
+        {
+            EasyBotPlayer player = new EasyBotPlayer(
+                RandomIcon(),
+                "EasyBot");
+
+            players.Add(player);
+            PlayerCard card = new PlayerCard()
+            {
+                PlayerName = player.Name
+            };
+            player.Icon.RenderCanvas(ref card.Icon);
+            card.DeletePlayer += PlayerRemoved;
+            PlayerCardContainer.Children.Add(card);
+        }
+
+        private void MediumBotAdded(object sender, EventArgs e)
+        {
+            MediumBotPlayer player = new MediumBotPlayer(
+                RandomIcon(),
+                "MediumBot");
+
+            players.Add(player);
+            PlayerCard card = new PlayerCard()
+            {
+                PlayerName = player.Name
+            };
+            player.Icon.RenderCanvas(ref card.Icon);
+            card.DeletePlayer += PlayerRemoved;
+            PlayerCardContainer.Children.Add(card);
+        }
+
+        private void HardBotAdded(object sender, EventArgs e)
+        {
+            HardBotPlayer player = new HardBotPlayer(
+                RandomIcon(),
+                "HardBot");
+
+            players.Add(player);
+            PlayerCard card = new PlayerCard()
+            {
+                PlayerName = player.Name
+            };
+            player.Icon.RenderCanvas(ref card.Icon);
+            card.DeletePlayer += PlayerRemoved;
+            PlayerCardContainer.Children.Add(card);
+        }
+
+        private void PlayerAdded(object sender, EventArgs e)
+        {
+            Player player = new Player(
+                RandomIcon(),
+                "Player");
+
+            players.Add(player);
+            PlayerCard card = new PlayerCard()
+            {
+                PlayerName = player.Name
+            };
+            player.Icon.RenderCanvas(ref card.Icon);
+            card.DeletePlayer += PlayerRemoved;
+            PlayerCardContainer.Children.Add(card);
+        }
+
+        private void PlayerRemoved(object? sender, EventArgs e)
+        {
+            if (sender == null)
+            {
+                return;
+            }
+            int index = PlayerCardContainer.Children.IndexOf((PlayerCard)sender);
+            PlayerCardContainer.Children.RemoveAt(index);
+            players.RemoveAt(index);
+        }
+
+        private void GameStarted(object sender, EventArgs e)
+        {
+            if (players.Count <= 0)
+            {
+                return;
+            }
+            // Start the game
+            gameManager = new GameManager(Int32.Parse(SizeInput.Text), Int32.Parse(DimensionInput.Text), players, ref Viewport);
+            gameManager.Render();
+
+            // Disable controls
+            gameStarted = true;
+            SizeInput.IsEnabled = false;
+            DimensionInput.IsEnabled = false;
+            foreach (PlayerCard card in PlayerCardContainer.Children)
+            {
+                card.UsernameTextbox.IsEnabled = false;
+                card.DeleteButton.IsEnabled = false;
+            }
+            EasyBotButton.IsEnabled = false;
+            MediumBotButton.IsEnabled = false;
+            HardBotButton.IsEnabled = false;
+            PlayerButton.IsEnabled = false;
+            StartButton.IsEnabled = false;
+        }
+
+        private void GameEnded()
+        {
+            // Enable controls
+            gameStarted = false;
+            SizeInput.IsEnabled = true;
+            DimensionInput.IsEnabled = true;
+            foreach (PlayerCard card in PlayerCardContainer.Children)
+            {
+                card.UsernameTextbox.IsEnabled = true;
+                card.DeleteButton.IsEnabled = true;
+            }
+            EasyBotButton.IsEnabled = true;
+            MediumBotButton.IsEnabled = true;
+            HardBotButton.IsEnabled = true;
+            PlayerButton.IsEnabled = true;
+            StartButton.IsEnabled = true;
+        }
+
+        private static GameIcon RandomIcon()
+        {
+            Random random = new Random();
+            int selection = random.Next(3);
+            switch (selection)
+            {
+                case 0: return new IconCross(RandomColour());
+                case 1: return new IconNought(RandomColour());
+                case 2: return new IconTetrahedron(RandomColour());
+            }
+            return new IconCross(RandomColour());
+        }
+
+        private static System.Drawing.Color RandomColour()
+        {
+            System.Drawing.Color[] colours = 
+            {
+                System.Drawing.Color.Red,
+                System.Drawing.Color.Green,
+                System.Drawing.Color.Blue,
+                System.Drawing.Color.Cyan,
+                System.Drawing.Color.Magenta,
+                System.Drawing.Color.Yellow 
+            };
+            Random random = new Random();
+            return colours[random.Next(colours.Length)];
         }
     }
 }

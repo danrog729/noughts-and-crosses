@@ -42,7 +42,7 @@ namespace noughts_and_crosses
         public void Render()
         {
             image.LockBuffer();
-            image.Fill(Color.Black);
+            image.Fill(Color.White);
 
             Matrix4D WorldToImageMatrix = OrthoToImageMatrix * Camera.OrthographicMatrix * Camera.PerspectiveMatrix * Matrix4D.ScaleMatrix(new Vector3D(1.0f, 1.0f, -1.0f)) * Camera.CameraSpaceMatrix;
 
@@ -378,7 +378,7 @@ namespace noughts_and_crosses
                     (5, 7, 6)
                 ];
 
-            colour = Color.White;
+            colour = Color.Black;
             children = new List<Object3D>();
         }
 
