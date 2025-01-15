@@ -46,7 +46,7 @@ namespace noughts_and_crosses
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            gameManager.ViewSizeChanged((int)e.NewSize.Width, (int)e.NewSize.Height, ref Viewport);
+            gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
         }
 
         public void ViewportMouseMove(object sender, MouseEventArgs e)
@@ -93,6 +93,12 @@ namespace noughts_and_crosses
             {
                 leftMousePressedLast = true;
             }
+        }
+
+        public void ViewportMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            gameManager.Stretches = new Vector3D(gameManager.Stretches.X + e.Delta * 0.0001f, gameManager.Stretches.Y + 0.0f, gameManager.Stretches.Z + 0.0f);
+            gameManager.Render();
         }
 
         public void SizeTextChanged(object sender, EventArgs e)
@@ -235,6 +241,7 @@ namespace noughts_and_crosses
             }
             // Start the game
             gameManager = new GameManager(Int32.Parse(SizeInput.Text), Int32.Parse(DimensionInput.Text), players, ref Viewport);
+            gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
             gameManager.Render();
 
             // Disable controls
@@ -250,7 +257,12 @@ namespace noughts_and_crosses
             MediumBotButton.IsEnabled = false;
             HardBotButton.IsEnabled = false;
             PlayerButton.IsEnabled = false;
-            StartButton.IsEnabled = false;
+            StartButton.Content = "Restart Game";
+
+            if (gameManager.GameFinished)
+            {
+                GameEnded();
+            }
         }
 
         private void GameEnded()
@@ -268,7 +280,7 @@ namespace noughts_and_crosses
             MediumBotButton.IsEnabled = true;
             HardBotButton.IsEnabled = true;
             PlayerButton.IsEnabled = true;
-            StartButton.IsEnabled = true;
+            StartButton.Content = "Start Game";
         }
 
         private static GameIcon RandomIcon()
@@ -292,8 +304,7 @@ namespace noughts_and_crosses
                 System.Drawing.Color.Green,
                 System.Drawing.Color.Blue,
                 System.Drawing.Color.Cyan,
-                System.Drawing.Color.Magenta,
-                System.Drawing.Color.Yellow 
+                System.Drawing.Color.Magenta
             };
             Random random = new Random();
             return colours[random.Next(colours.Length)];

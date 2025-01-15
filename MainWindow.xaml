@@ -67,13 +67,12 @@
             <Button Grid.Row="3" Margin="20" Click="GameStarted" Name="StartButton">Start Game</Button>
             
         </Grid>
-        
-        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1">
-            <Image Name="Viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    SizeChanged="ViewportSizeChanged"
-                    MouseMove="ViewportMouseMove"
-                    MouseDown="ViewportMouseDown"
-                    MouseUp="ViewportMouseUp"/>
-        </Canvas>
+
+        <Image Name="Viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Stretch="Fill"
+            SizeChanged="ViewportSizeChanged"
+            MouseMove="ViewportMouseMove"
+            MouseDown="ViewportMouseDown"
+            MouseUp="ViewportMouseUp"
+            MouseWheel="ViewportMouseWheel"/>
     </Grid>
 </Window>

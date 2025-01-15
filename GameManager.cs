@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -15,6 +16,25 @@ namespace noughts_and_crosses
     {
         public PlayerOrientedBoard board;
         public Scene3D scene;
+
+        private Vector3D _stretches;
+        public Vector3D Stretches
+        {
+            get => _stretches;
+            set
+            {
+                _stretches = value;
+                if (_stretches.X < 1.0f) _stretches.X = 1.0f;
+                if (_stretches.Y < 1.0f) _stretches.Y = 1.0f;
+                if (_stretches.Z < 1.0f) _stretches.Z = 1.0f;
+                if (_stretches.X > 3.5f) _stretches.X = 3.5f;
+                if (_stretches.Y > 3.5f) _stretches.Y = 3.5f;
+                if (_stretches.Z > 3.5f) _stretches.Z = 3.5f;
+                RecalculateStretches();
+            }
+        }
+
+        private Vector3D originalScale;
 
         private int _size;
         public int Size
@@ -55,6 +75,7 @@ namespace noughts_and_crosses
             PlayerCount = players.Count;
             CurrentPlayer = 1;
             GameFinished = false;
+            _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
 
             // Create the board and scene
             board = new PlayerOrientedBoard(Size, Dimensions, PlayerCount);
@@ -78,6 +99,7 @@ namespace noughts_and_crosses
                     Dimensions >= 3 ? 1.0f : 1.0f / Size
                     )
             };
+            originalScale = root.Scale;
             scene.rootObject = root;
 
             // Add the cells for the board
@@ -145,30 +167,10 @@ namespace noughts_and_crosses
             clickedObject.children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
 
             // If a win exists, add the line to indicate so
-            if (board.WinExists(boardIndex, true) != 0 && board.winDirections != null)
+            if (board.WinExists(boardIndex, true) != 0)
             {
                 GameFinished = true;
-                foreach (WinDirection winDirection in board.winDirections)
-                {
-                    if (winDirection.win == true)
-                    {
-                        int[] rootDimIndex = board.DimensionalIndex(winDirection.rootIndex);
-                        int[] finalDimIndex = board.DimensionalIndex(winDirection.rootIndex + (board.Size - 1) * winDirection.indexOffset);
-                        scene.rootObject.children.Add(new ObjectLine(
-                            new Vector3D(
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f,
-                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
-                            new Vector3D(
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f,
-                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
-                                )
-                        {
-                            colour = System.Drawing.Color.Black
-                        });
-                    }
-                }
+                AddWinLines();
             }
             if (board.Empties == 0)
             {
@@ -201,6 +203,10 @@ namespace noughts_and_crosses
                 axis.Y *= -1;
                 angle *= -1;
             }
+            if (scene.rootObject != null)
+            {
+                axis = (Vector3D)(Quaternion.Normalise(scene.rootObject.Rotation * axis * scene.rootObject.Rotation.Conjugate()));
+            }
             angle *= 0.2f; // sensitivity
             Quaternion rotation = Quaternion.FromAxisAngle(axis, angle);
             if (scene.rootObject != null)
@@ -208,6 +214,34 @@ namespace noughts_and_crosses
                 scene.rootObject.Rotation = rotation * scene.rootObject.Rotation;
             }
             scene.Render();
+        }
+
+        public void AddWinLines()
+        {
+            if (board.winDirections != null && scene.rootObject != null)
+            {
+                foreach (WinDirection winDirection in board.winDirections)
+                {
+                    if (winDirection.win == true)
+                    {
+                        int[] rootDimIndex = board.DimensionalIndex(winDirection.rootIndex);
+                        int[] finalDimIndex = board.DimensionalIndex(winDirection.rootIndex + (board.Size - 1) * winDirection.indexOffset);
+                        scene.rootObject.children.Add(new ObjectLine(
+                            new Vector3D(
+                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
+                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f,
+                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
+                            new Vector3D(
+                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
+                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f,
+                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
+                                )
+                        {
+                            colour = System.Drawing.Color.Black
+                        });
+                    }
+                }
+            }
         }
 
         public void PlayBotMoves()
@@ -223,10 +257,34 @@ namespace noughts_and_crosses
                 scene.rootObject.children[board.AbsIndex(selection)].children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
                 CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
                 scene.Render();
-                if (board.WinExists(selection, false) != 0)
+                if (board.WinExists(selection, true) != 0 || board.Empties == 0)
                 {
+                    GameFinished = true;
+                    AddWinLines();
                     return;
                 }
+            }
+        }
+
+        private void RecalculateStretches()
+        {
+            if (scene.rootObject == null) return;
+
+            scene.rootObject.Scale = new Vector3D(_stretches.X * originalScale.X, _stretches.Y * originalScale.Y, _stretches.Z * originalScale.Z);
+
+            for (int index = 0; index < board.Length; index++)
+            {
+                Object3D child = scene.rootObject.children[index];
+                child.Scale = new Vector3D(
+                    1.0f / (board.Size * _stretches.X),
+                    board.Dimensions >= 2 ? 1.0f / (board.Size * _stretches.Y) : 1.0f,
+                    board.Dimensions >= 3 ? 1.0f / (board.Size * _stretches.Z) : 1.0f);
+                int[] dimIndex = board.DimensionalIndex(index);
+                child.Position = new Vector3D(
+                    -1.0f + dimIndex[0] + (1.0f - dimIndex[0]) / (board.Size * _stretches.X),
+                    board.Dimensions >= 2 ? -1.0f + dimIndex[1] + (1.0f - dimIndex[1]) / (board.Size * _stretches.Y) : 0.0f,
+                    board.Dimensions >= 3 ? -1.0f + dimIndex[2] + (1.0f - dimIndex[2]) / (board.Size * _stretches.Z) : 0.0f
+                    );
             }
         }
     }
@@ -365,21 +423,21 @@ namespace noughts_and_crosses
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
 
             System.Windows.Shapes.Line line1 = new System.Windows.Shapes.Line();
-            line1.Width = 10;
+            line1.StrokeThickness = 2;
             line1.Stroke = colour;
-            line1.X1 = 10;
-            line1.Y1 = 10;
-            line1.X2 = 20;
-            line1.Y2 = 20;
+            line1.X1 = 5;
+            line1.Y1 = 5;
+            line1.X2 = 25;
+            line1.Y2 = 25;
             target.Children.Add(line1);
 
             System.Windows.Shapes.Line line2 = new System.Windows.Shapes.Line();
-            line2.Width = 10;
+            line2.StrokeThickness = 2;
             line2.Stroke = colour;
-            line2.X1 = 10;
-            line2.Y1 = 20;
-            line2.X2 = 20;
-            line2.Y2 = 10;
+            line2.X1 = 5;
+            line2.Y1 = 25;
+            line2.X2 = 25;
+            line2.Y2 = 5;
             target.Children.Add(line2);
         }
     }
@@ -400,11 +458,13 @@ namespace noughts_and_crosses
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
 
             System.Windows.Shapes.Ellipse ellipse = new System.Windows.Shapes.Ellipse();
-            ellipse.Width = 10;
             ellipse.Stroke = colour;
-            ellipse.Width = 20;
-            ellipse.Height = 20;
+            ellipse.StrokeThickness = 2;
+            ellipse.Width = 25;
+            ellipse.Height = 25;
             target.Children.Add(ellipse);
+            Canvas.SetLeft(ellipse, 2.5);
+            Canvas.SetTop(ellipse, 2.5);
         }
     }
 
@@ -425,10 +485,10 @@ namespace noughts_and_crosses
 
             System.Windows.Shapes.Polygon triangle = new System.Windows.Shapes.Polygon();
             triangle.Stroke = colour;
-            triangle.Width = 10;
-            triangle.Points.Add(new System.Windows.Point(15, 10));
-            triangle.Points.Add(new System.Windows.Point(10, 20));
-            triangle.Points.Add(new System.Windows.Point(20, 20));
+            triangle.StrokeThickness = 2;
+            triangle.Points.Add(new System.Windows.Point(15, 5));
+            triangle.Points.Add(new System.Windows.Point(5, 25));
+            triangle.Points.Add(new System.Windows.Point(25, 25));
             target.Children.Add(triangle);
         }
     }

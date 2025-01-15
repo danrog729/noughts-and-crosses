@@ -35,7 +35,22 @@ namespace noughts_and_crosses
             image = new ImageRenderer(width, height);
             controlImage.Source = image.bitmap;
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
-            Camera.AspectRatio = (float)width / height;
+
+            float newAspectRatio = (float)width / height;
+            float oldAspectRatio = Camera.AspectRatio;
+            if (newAspectRatio > oldAspectRatio)
+            {
+                // window is wider than before, keep vertical fov constant
+                float verticalFOV = Camera.VerticalFOV;
+                Camera.AspectRatio = newAspectRatio;
+                Camera.VerticalFOV = verticalFOV;
+            }
+            else
+            {
+                // window is the same or narrower than before, keep horizontal fov constant (default)
+                Camera.AspectRatio = newAspectRatio;
+            }
+
             Render();
         }
 
@@ -124,7 +139,7 @@ namespace noughts_and_crosses
             return closest;
         }
 
-        private (Object3D?, float) PixelSearchBranch(Matrix4D parentToImage, Object3D root, int x, int y)
+        private static (Object3D?, float) PixelSearchBranch(Matrix4D parentToImage, Object3D root, int x, int y)
         {
             Object3D? closest = null;
             float closestDepth = 1.0f;
@@ -165,7 +180,7 @@ namespace noughts_and_crosses
             return (closest, closestDepth);
         }
 
-        private int Edge(Vector3D p1, Vector3D p2, Vector3D p3)
+        private static int Edge(Vector3D p1, Vector3D p2, Vector3D p3)
         {
             return ((int)p2.X - (int)p1.X) * ((int)p3.Y - (int)p1.Y) - ((int)p2.Y - (int)p1.Y) * ((int)p3.X - (int)p1.X);
         }
@@ -255,6 +270,11 @@ namespace noughts_and_crosses
             get
             {
                 return FOV / AspectRatio;
+            }
+            set
+            {
+                FOV = value * AspectRatio;
+                CalculateMatrices();
             }
         }
         

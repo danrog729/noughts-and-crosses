@@ -38,6 +38,7 @@ namespace noughts_and_crosses
                 }
             }
             backingGraphics = Graphics.FromImage(backingBitmap);
+            backingGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         }
 
         /// <summary>
