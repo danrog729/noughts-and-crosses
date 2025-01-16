@@ -23,13 +23,20 @@ namespace noughts_and_crosses
             get => _stretches;
             set
             {
-                _stretches = value;
-                if (_stretches.X < 1.0f) _stretches.X = 1.0f;
-                if (_stretches.Y < 1.0f) _stretches.Y = 1.0f;
-                if (_stretches.Z < 1.0f) _stretches.Z = 1.0f;
-                if (_stretches.X > 3.5f) _stretches.X = 3.5f;
-                if (_stretches.Y > 3.5f) _stretches.Y = 3.5f;
-                if (_stretches.Z > 3.5f) _stretches.Z = 3.5f;
+                if (board.Size == 1)
+                {
+                    _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
+                }
+                else
+                {
+                    _stretches = value;
+                    if (_stretches.X < 1.0f) _stretches.X = 1.0f;
+                    if (_stretches.Y < 1.0f) _stretches.Y = 1.0f;
+                    if (_stretches.Z < 1.0f) _stretches.Z = 1.0f;
+                    if (_stretches.X > 3.5f) _stretches.X = 3.5f;
+                    if (_stretches.Y > 3.5f) _stretches.Y = 3.5f;
+                    if (_stretches.Z > 3.5f) _stretches.Z = 3.5f;
+                }
                 RecalculateStretches();
             }
         }
@@ -90,16 +97,21 @@ namespace noughts_and_crosses
 
         private void MakeGrid()
         {
-            // Add the root object for the scene
-            Object3D root = new Object3D()
+            if (board.Size == 1)
             {
-                Scale = new Vector3D(
+                _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
+            }
+            // Add the root object for the scene
+            originalScale = new Vector3D(
                     1.0f,
                     Dimensions >= 2 ? 1.0f : 1.0f / Size,
                     Dimensions >= 3 ? 1.0f : 1.0f / Size
-                    )
+                    );
+            Object3D root = new Object3D()
+            {
+                Rotation = scene.rootObject == null ? new Quaternion(1.0f, 0.0f, 0.0f, 0.0f) : scene.rootObject.Rotation,
+                Scale = new Vector3D(_stretches.X * originalScale.X, _stretches.Y * originalScale.Y, _stretches.Z * originalScale.Z)
             };
-            originalScale = root.Scale;
             scene.rootObject = root;
 
             // Add the cells for the board
@@ -108,14 +120,15 @@ namespace noughts_and_crosses
                 int[] dimIndex = board.DimensionalIndex(cell);
                 Object3D obj = new Object3D()
                 {
-                    Position = new Vector3D(
-                        -1.0f + (1.0f / Size) + (1.0f / Size) * dimIndex[0] * 2,
-                        Dimensions >= 2 ? -1.0f + (1.0f / Size) + (1.0f / Size) * dimIndex[1] * 2 : 0.0f,
-                        Dimensions >= 3 ? -1.0f + (1.0f / Size) + (1.0f / Size) * dimIndex[2] * 2 : 0.0f),
+                    Position = board.Size > 1 ? new Vector3D(
+                        -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
+                        board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
+                        board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f)
+                        : new Vector3D(0.0f, 0.0f, 0.0f),
                     Scale = new Vector3D(
-                        1.0f / Size,
-                        Dimensions >= 2 ? 1.0f / Size : 1.0f,
-                        Dimensions >= 3 ? 1.0f / Size : 1.0f),
+                        1.0f / (board.Size * _stretches.X),
+                        board.Dimensions >= 2 ? 1.0f / (board.Size * _stretches.Y) : 1.0f,
+                        board.Dimensions >= 3 ? 1.0f / (board.Size * _stretches.Z) : 1.0f),
                     colour = System.Drawing.Color.Gray
                 };
                 scene.rootObject.children.Add(obj);
@@ -229,11 +242,11 @@ namespace noughts_and_crosses
                         scene.rootObject.children.Add(new ObjectLine(
                             new Vector3D(
                                 -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f,
+                                board.Dimensions >= 2 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f : 0.0f,
                                 board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
                             new Vector3D(
                                 -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f,
+                                board.Dimensions >= 2 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f : 0.0f,
                                 board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
                                 )
                         {
@@ -281,10 +294,9 @@ namespace noughts_and_crosses
                     board.Dimensions >= 3 ? 1.0f / (board.Size * _stretches.Z) : 1.0f);
                 int[] dimIndex = board.DimensionalIndex(index);
                 child.Position = new Vector3D(
-                    -1.0f + dimIndex[0] + (1.0f - dimIndex[0]) / (board.Size * _stretches.X),
-                    board.Dimensions >= 2 ? -1.0f + dimIndex[1] + (1.0f - dimIndex[1]) / (board.Size * _stretches.Y) : 0.0f,
-                    board.Dimensions >= 3 ? -1.0f + dimIndex[2] + (1.0f - dimIndex[2]) / (board.Size * _stretches.Z) : 0.0f
-                    );
+                    -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
+                    board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
+                    board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f);
             }
         }
     }

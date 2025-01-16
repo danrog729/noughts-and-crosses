@@ -22,6 +22,8 @@ namespace noughts_and_crosses
     /// </summary>
     public partial class MainWindow : Window
     {
+        Settings? settings;
+
         System.Windows.Point lastMousePos;
         bool mouseDownLast = false;
         bool leftMousePressedLast = false;
@@ -99,6 +101,15 @@ namespace noughts_and_crosses
         {
             gameManager.Stretches = new Vector3D(gameManager.Stretches.X + e.Delta * 0.0001f, gameManager.Stretches.Y + 0.0f, gameManager.Stretches.Z + 0.0f);
             gameManager.Render();
+        }
+
+        public void OpenSettings(object sender, EventArgs e)
+        {
+            if (settings == null)
+            {
+                settings = new Settings();
+            }
+            settings.Show();
         }
 
         public void SizeTextChanged(object sender, EventArgs e)
@@ -235,6 +246,11 @@ namespace noughts_and_crosses
 
         private void GameStarted(object sender, EventArgs e)
         {
+            if (gameStarted)
+            {
+                GameEnded();
+                return;
+            }
             if (players.Count <= 0)
             {
                 return;
@@ -257,7 +273,7 @@ namespace noughts_and_crosses
             MediumBotButton.IsEnabled = false;
             HardBotButton.IsEnabled = false;
             PlayerButton.IsEnabled = false;
-            StartButton.Content = "Restart Game";
+            StartButton.Content = "Stop Game";
 
             if (gameManager.GameFinished)
             {
