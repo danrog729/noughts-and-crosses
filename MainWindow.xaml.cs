@@ -99,7 +99,7 @@ namespace noughts_and_crosses
 
         public void ViewportMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            gameManager.Stretches = new Vector3D(gameManager.Stretches.X + e.Delta * 0.0001f, gameManager.Stretches.Y + 0.0f, gameManager.Stretches.Z + 0.0f);
+            gameManager.GridStretch(e.Delta * 0.0005f);
             gameManager.Render();
         }
 

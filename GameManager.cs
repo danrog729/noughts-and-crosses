@@ -36,6 +36,8 @@ namespace noughts_and_crosses
                     if (_stretches.X > 3.5f) _stretches.X = 3.5f;
                     if (_stretches.Y > 3.5f) _stretches.Y = 3.5f;
                     if (_stretches.Z > 3.5f) _stretches.Z = 3.5f;
+                    if (board.Dimensions <= 1) _stretches.Y = 1.0f;
+                    if (board.Dimensions <= 2) _stretches.Z = 1.0f;
                 }
                 RecalculateStretches();
             }
@@ -143,6 +145,30 @@ namespace noughts_and_crosses
         public void ViewSizeChanged(int newX, int newY, ref System.Windows.Controls.Image canvas)
         {
             scene.NewSize(newX, newY, ref canvas);
+        }
+
+        public void GridStretch(float delta)
+        {
+            if (scene.rootObject == null)
+            {
+                return;
+            }
+            Vector3D localX = (Vector3D)(scene.rootObject.Rotation * new Vector3D(1.0f, 0.0f, 0.0f) * scene.rootObject.Rotation.Conjugate());
+            Vector3D localY = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 1.0f, 0.0f) * scene.rootObject.Rotation.Conjugate());
+            Vector3D localZ = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 0.0f, 1.0f) * scene.rootObject.Rotation.Conjugate());
+            Vector3D smallestAngle = new Vector3D(1.0f, 0.0f, 0.0f);
+            float largestDotProduct = float.Max(Vector3D.DotProduct(localX, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localX, new Vector3D(-1.0f, 0.0f, 0.0f)));
+            if (Vector3D.DotProduct(localY, new Vector3D(1.0f, 0.0f, 0.0f)) > largestDotProduct || Vector3D.DotProduct(localY, new Vector3D(-1.0f, 0.0f, 0.0f)) > largestDotProduct)
+            {
+                smallestAngle = new Vector3D(0.0f, 1.0f, 0.0f);
+                largestDotProduct = float.Max(Vector3D.DotProduct(localY, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localY, new Vector3D(-1.0f, 0.0f, 0.0f)));
+            }
+            if (Vector3D.DotProduct(localZ, new Vector3D(1.0f, 0.0f, 0.0f)) > largestDotProduct || Vector3D.DotProduct(localZ, new Vector3D(-1.0f, 0.0f, 0.0f)) > largestDotProduct)
+            {
+                smallestAngle = new Vector3D(0.0f, 0.0f, 1.0f);
+                largestDotProduct = float.Max(Vector3D.DotProduct(localZ, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localZ, new Vector3D(-1.0f, 0.0f, 0.0f)));
+            }
+            Stretches = new Vector3D(_stretches.X + smallestAngle.X * delta, _stretches.Y + smallestAngle.Y * delta, _stretches.Z + smallestAngle.Z * delta);
         }
 
         public void MouseClicked(int positionX, int positionY)

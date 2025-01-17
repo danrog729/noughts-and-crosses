@@ -572,6 +572,8 @@ namespace noughts_and_crosses
             return new Vector3D(vector.X / magnitude, vector.Y / magnitude, vector.Z / magnitude);
         }
 
+        public static float DotProduct(Vector3D v1, Vector3D v2) => v1.X* v2.X + v1.Y* v2.Y + v1.Z* v2.Z;
+
         public override string ToString()
         {
             return "(" + X + ", " + Y + ", " + Z + ")";
@@ -602,6 +604,8 @@ namespace noughts_and_crosses
         public static Vector4D operator /(Vector4D vector, float scalar) => (1/scalar) * vector;
 
         public static implicit operator Vector4D(Vector3D vector) => new Vector4D(vector.X, vector.Y, vector.Z, 1.0f);
+
+        public static float DotProduct(Vector4D v1, Vector4D v2) => v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z + v1.W * v2.W;
 
         public override string ToString()
         {

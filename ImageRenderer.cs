@@ -92,7 +92,7 @@ namespace noughts_and_crosses
         /// <param name="colour">The colour to draw with</param>
         public void DrawLine(Vector3D p1, Vector3D p2, System.Drawing.Color colour)
         {
-            if (p1.Z < 0 || p2.Z < 0)
+            if (p1.Z < 0 || p2.Z < 0 || p1.Z > 1.0f || p2.Z > 1.0f)
             {
                 return;
             }
