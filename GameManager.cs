@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace noughts_and_crosses
 {
@@ -44,6 +35,7 @@ namespace noughts_and_crosses
         }
 
         private Vector3D originalScale;
+        private Vector3D SplitDirection;
 
         private int _size;
         public int Size
@@ -64,14 +56,23 @@ namespace noughts_and_crosses
             set
             {
                 _dimensions = value;
-                board = new PlayerOrientedBoard(Size, Dimensions, PlayerCount);
+                board = new PlayerOrientedBoard(Size, _dimensions, PlayerCount);
                 MakeGrid();
+                if (_dimensions <= 1)
+                {
+                    Stretches = new Vector3D(Stretches.X, 1.0f, 1.0f);
+                }
+                else if (_dimensions <= 2)
+                {
+                    Stretches = new Vector3D(Stretches.X, Stretches.Y, 1.0f);
+                }
             }
         }
 
         public int PlayerCount;
         public int CurrentPlayer;
         public bool GameFinished;
+        public int winningPlayer;
 
         public readonly List<Player> Players;
 
@@ -85,12 +86,14 @@ namespace noughts_and_crosses
             CurrentPlayer = 1;
             GameFinished = false;
             _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
+            SplitDirection = new Vector3D(1.0f, 0.0f, 0.0f);
 
             // Create the board and scene
             board = new PlayerOrientedBoard(Size, Dimensions, PlayerCount);
             scene = new Scene3D(ref canvas);
             MakeGrid();
 
+            winningPlayer = 0;
             if (players.Count > 0)
             {
                 PlayBotMoves();
@@ -157,16 +160,16 @@ namespace noughts_and_crosses
             Vector3D localY = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 1.0f, 0.0f) * scene.rootObject.Rotation.Conjugate());
             Vector3D localZ = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 0.0f, 1.0f) * scene.rootObject.Rotation.Conjugate());
             Vector3D smallestAngle = new Vector3D(1.0f, 0.0f, 0.0f);
-            float largestDotProduct = float.Max(Vector3D.DotProduct(localX, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localX, new Vector3D(-1.0f, 0.0f, 0.0f)));
-            if (Vector3D.DotProduct(localY, new Vector3D(1.0f, 0.0f, 0.0f)) > largestDotProduct || Vector3D.DotProduct(localY, new Vector3D(-1.0f, 0.0f, 0.0f)) > largestDotProduct)
+            float largestDotProduct = float.Max(Vector3D.DotProduct(localX, SplitDirection), Vector3D.DotProduct(localX, -SplitDirection));
+            if (Vector3D.DotProduct(localY, SplitDirection) > largestDotProduct || Vector3D.DotProduct(localY, -SplitDirection) > largestDotProduct)
             {
                 smallestAngle = new Vector3D(0.0f, 1.0f, 0.0f);
-                largestDotProduct = float.Max(Vector3D.DotProduct(localY, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localY, new Vector3D(-1.0f, 0.0f, 0.0f)));
+                largestDotProduct = float.Max(Vector3D.DotProduct(localY, SplitDirection), Vector3D.DotProduct(localY, -SplitDirection));
             }
-            if (Vector3D.DotProduct(localZ, new Vector3D(1.0f, 0.0f, 0.0f)) > largestDotProduct || Vector3D.DotProduct(localZ, new Vector3D(-1.0f, 0.0f, 0.0f)) > largestDotProduct)
+            if (Vector3D.DotProduct(localZ, SplitDirection) > largestDotProduct || Vector3D.DotProduct(localZ, SplitDirection) > largestDotProduct)
             {
                 smallestAngle = new Vector3D(0.0f, 0.0f, 1.0f);
-                largestDotProduct = float.Max(Vector3D.DotProduct(localZ, new Vector3D(1.0f, 0.0f, 0.0f)), Vector3D.DotProduct(localZ, new Vector3D(-1.0f, 0.0f, 0.0f)));
+                largestDotProduct = float.Max(Vector3D.DotProduct(localZ, SplitDirection), Vector3D.DotProduct(localZ, SplitDirection));
             }
             Stretches = new Vector3D(_stretches.X + smallestAngle.X * delta, _stretches.Y + smallestAngle.Y * delta, _stretches.Z + smallestAngle.Z * delta);
         }
@@ -206,7 +209,8 @@ namespace noughts_and_crosses
             clickedObject.children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
 
             // If a win exists, add the line to indicate so
-            if (board.WinExists(boardIndex, true) != 0)
+            winningPlayer = board.WinExists(boardIndex, true);
+            if (winningPlayer != 0)
             {
                 GameFinished = true;
                 AddWinLines();
@@ -220,11 +224,18 @@ namespace noughts_and_crosses
             scene.Render();
             CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
 
-            PlayBotMoves();
+            if (!GameFinished)
+            {
+                PlayBotMoves();
+            }
         }
 
         public void MouseMoved(float deltaX, float deltaY)
         {
+            if (deltaX == 0 && deltaY == 0)
+            {
+                return;
+            }
             float angle = -(float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
             Vector3D axis = new Vector3D(
@@ -296,7 +307,8 @@ namespace noughts_and_crosses
                 scene.rootObject.children[board.AbsIndex(selection)].children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
                 CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
                 scene.Render();
-                if (board.WinExists(selection, true) != 0 || board.Empties == 0)
+                winningPlayer = board.WinExists(selection, true);
+                if (winningPlayer != 0 || board.Empties == 0)
                 {
                     GameFinished = true;
                     AddWinLines();
@@ -323,6 +335,20 @@ namespace noughts_and_crosses
                     -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
                     board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
                     board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f);
+            }
+        }
+
+        public void SwitchSplitDirection()
+        {
+            if (SplitDirection.X == 1.0f)
+            {
+                SplitDirection.X = 0.0f;
+                SplitDirection.Y = 1.0f;
+            }
+            else
+            {
+                SplitDirection.X = 1.0f;
+                SplitDirection.Y = 0.0f;
             }
         }
     }
@@ -390,7 +416,7 @@ namespace noughts_and_crosses
         }
     }
 
-    abstract class GameIcon
+    abstract public class GameIcon
     {
         public Object3D icon3D;
 
@@ -406,6 +432,7 @@ namespace noughts_and_crosses
         public virtual void RenderCanvas(ref Canvas target)
         {
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
+            target.Children.Clear();
 
             System.Windows.Shapes.Line line1 = new System.Windows.Shapes.Line();
             line1.Width = 10;
@@ -445,7 +472,7 @@ namespace noughts_and_crosses
         }
     }
 
-    class IconCross : GameIcon
+    public class IconCross : GameIcon
     {
         public IconCross(System.Drawing.Color colour) : base(colour)
         {
@@ -459,28 +486,29 @@ namespace noughts_and_crosses
         public override void RenderCanvas(ref Canvas target)
         {
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
+            target.Children.Clear();
 
             System.Windows.Shapes.Line line1 = new System.Windows.Shapes.Line();
             line1.StrokeThickness = 2;
             line1.Stroke = colour;
-            line1.X1 = 5;
-            line1.Y1 = 5;
-            line1.X2 = 25;
-            line1.Y2 = 25;
+            line1.X1 = -10;
+            line1.Y1 = -10;
+            line1.X2 = 10;
+            line1.Y2 = 10;
             target.Children.Add(line1);
 
             System.Windows.Shapes.Line line2 = new System.Windows.Shapes.Line();
             line2.StrokeThickness = 2;
             line2.Stroke = colour;
-            line2.X1 = 5;
-            line2.Y1 = 25;
-            line2.X2 = 25;
-            line2.Y2 = 5;
+            line2.X1 = -10;
+            line2.Y1 = 10;
+            line2.X2 = 10;
+            line2.Y2 = -10;
             target.Children.Add(line2);
         }
     }
 
-    class IconNought : GameIcon
+    public class IconNought : GameIcon
     {
         public IconNought(System.Drawing.Color colour) : base(colour)
         {
@@ -494,6 +522,7 @@ namespace noughts_and_crosses
         public override void RenderCanvas(ref Canvas target)
         {
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
+            target.Children.Clear();
 
             System.Windows.Shapes.Ellipse ellipse = new System.Windows.Shapes.Ellipse();
             ellipse.Stroke = colour;
@@ -501,12 +530,12 @@ namespace noughts_and_crosses
             ellipse.Width = 25;
             ellipse.Height = 25;
             target.Children.Add(ellipse);
-            Canvas.SetLeft(ellipse, 2.5);
-            Canvas.SetTop(ellipse, 2.5);
+            Canvas.SetLeft(ellipse, -12.5);
+            Canvas.SetTop(ellipse, -12.5);
         }
     }
 
-    class IconTetrahedron : GameIcon
+    public class IconTetrahedron : GameIcon
     {
         public IconTetrahedron(System.Drawing.Color colour) : base(colour)
         {
@@ -520,13 +549,14 @@ namespace noughts_and_crosses
         public override void RenderCanvas(ref Canvas target)
         {
             SolidColorBrush colour = new SolidColorBrush(System.Windows.Media.Color.FromRgb(icon3D.colour.R, icon3D.colour.G, icon3D.colour.B));
+            target.Children.Clear();
 
             System.Windows.Shapes.Polygon triangle = new System.Windows.Shapes.Polygon();
             triangle.Stroke = colour;
             triangle.StrokeThickness = 2;
-            triangle.Points.Add(new System.Windows.Point(15, 5));
-            triangle.Points.Add(new System.Windows.Point(5, 25));
-            triangle.Points.Add(new System.Windows.Point(25, 25));
+            triangle.Points.Add(new System.Windows.Point(0, -10));
+            triangle.Points.Add(new System.Windows.Point(-10, 10));
+            triangle.Points.Add(new System.Windows.Point(10, 10));
             target.Children.Add(triangle);
         }
     }

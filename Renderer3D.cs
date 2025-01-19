@@ -1,11 +1,4 @@
-﻿using noughts_and_crosses;
-using System.CodeDom;
-using System.ComponentModel.Design.Serialization;
-using System.Drawing;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Windows.Documents;
-using System.Windows.Media.Imaging;
+﻿using System.Drawing;
 
 namespace noughts_and_crosses
 {
@@ -113,6 +106,27 @@ namespace noughts_and_crosses
                         new Vector3D(vertex3.X / vertex3.W, vertex3.Y / vertex3.W, vertex3.Z / vertex3.W),
                         obj.colour);
                 }
+            }
+        }
+
+        public void ReplaceObject(Object3D find, Object3D replace)
+        {
+            if (rootObject == null) return;
+            ReplaceBranch(rootObject, find, replace);
+        }
+
+        private void ReplaceBranch(Object3D branch, Object3D find, Object3D replace)
+        {
+            for (int childIndex = 0; childIndex < branch.children.Count; childIndex++)
+            {
+                Object3D child = branch.children[childIndex];
+                if (child.Equals(find))
+                {
+                    replace.children = child.children;
+                    branch.children[childIndex] = replace;
+                }
+                child = branch.children[childIndex];
+                ReplaceBranch(child, find, replace);
             }
         }
 
@@ -307,7 +321,7 @@ namespace noughts_and_crosses
         }
     }
 
-    class Object3D
+    public class Object3D
     {
         protected Vector3D _position;
         public Vector3D Position
@@ -542,7 +556,7 @@ namespace noughts_and_crosses
         }
     }
 
-    struct Vector3D
+    public struct Vector3D
     {
         public float X, Y, Z;
         public Vector3D(float x, float y, float z)
@@ -580,7 +594,7 @@ namespace noughts_and_crosses
         }
     }
 
-    struct Vector4D
+    public struct Vector4D
     {
         public float X, Y, Z, W;
         public Vector4D(float x, float y, float z, float w)
@@ -613,7 +627,7 @@ namespace noughts_and_crosses
         }
     }
 
-    struct Matrix4D
+    public struct Matrix4D
     {
         public float m00, m01, m02, m03;
         public float m10, m11, m12, m13;
@@ -723,7 +737,7 @@ namespace noughts_and_crosses
             );
     }
 
-    struct Quaternion
+    public struct Quaternion
     {
         public float r;
         public float i;
