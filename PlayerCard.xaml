@@ -67,7 +67,7 @@
         
         <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged">Player</TextBox>
         <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked">X</Button>
-        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" PreviewMouseWheel="ScoreCardScroll">
+        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScoreCardScroll">
             <StackPanel Name="ScoreCard" Margin="5" Orientation="Horizontal"/>
         </ScrollViewer>
     </Grid>

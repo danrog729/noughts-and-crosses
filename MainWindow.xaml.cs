@@ -187,15 +187,20 @@ namespace noughts_and_crosses
         {
             EasyBotPlayer player = new EasyBotPlayer(
                 RandomIcon(),
-                "EasyBot");
+                "EasyBot " + (players.Count + 1));
 
             players.Add(player);
             PlayerCard card = new PlayerCard()
             {
-                PlayerName = player.Name
+                PlayerName = player.Name,
+                PlayerNumber = players.Count,
+                Colour = player.Icon.icon3D.colour,
+                icon = player.Icon
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.ChangeColour += PlayerColourChanged;
+            card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
         }
 
@@ -203,15 +208,20 @@ namespace noughts_and_crosses
         {
             MediumBotPlayer player = new MediumBotPlayer(
                 RandomIcon(),
-                "MediumBot");
+                "MediumBot " + (players.Count + 1));
 
             players.Add(player);
             PlayerCard card = new PlayerCard()
             {
-                PlayerName = player.Name
+                PlayerName = player.Name,
+                PlayerNumber = players.Count,
+                Colour = player.Icon.icon3D.colour,
+                icon = player.Icon
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.ChangeColour += PlayerColourChanged;
+            card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
         }
 
@@ -219,15 +229,20 @@ namespace noughts_and_crosses
         {
             HardBotPlayer player = new HardBotPlayer(
                 RandomIcon(),
-                "HardBot");
+                "HardBot " + (players.Count + 1));
 
             players.Add(player);
             PlayerCard card = new PlayerCard()
             {
-                PlayerName = player.Name
+                PlayerName = player.Name,
+                PlayerNumber = players.Count,
+                Colour = player.Icon.icon3D.colour,
+                icon = player.Icon
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.ChangeColour += PlayerColourChanged;
+            card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
         }
 
