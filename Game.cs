@@ -354,12 +354,12 @@ namespace noughts_and_crosses
                 if (board[index] == 0)
                 {
                     // empty
+                    if (empties == choice)
+                    {
+                        finalIndex = index;
+                        break;
+                    }
                     empties++;
-                }
-                if (empties == choice)
-                {
-                    finalIndex = index;
-                    break;
                 }
             }
             return board.DimensionalIndex(finalIndex);
