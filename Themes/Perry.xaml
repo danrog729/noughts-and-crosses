@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Background" Color="#FFFF99"/>
+    <SolidColorBrush x:Key="Foreground" Color="#FFFF99"/>
+    <SolidColorBrush x:Key="FocusedForeground" Color="#FFFF99"/>
+    <SolidColorBrush x:Key="DisabledForeground" Color="#FFFF99"/>
+    <SolidColorBrush x:Key="BorderColour" Color="Transparent" />
+    <SolidColorBrush x:Key="DisabledBorderColour" Color="Transparent" />
+    <SolidColorBrush x:Key="FocusedBorderColour" Color="Transparent" />
+    <SolidColorBrush x:Key="AccentBorderColour" Color="Transparent" />
+    <Thickness x:Key="BorderThickness">0</Thickness>
+    <SolidColorBrush x:Key="StandardText" Color="#000000"/>
+    <SolidColorBrush x:Key="ImportantText" Color="#CC0000"/>
+    <SolidColorBrush x:Key="FocusedText" Color="#CC0000"/>
+    <SolidColorBrush x:Key="DisabledText" Color="Transparent"/>
+    <SolidColorBrush x:Key="AccentColour" Color="Transparent"/>
+    <SolidColorBrush x:Key="FocusedAccent" Color="Transparent"/>
+    <SolidColorBrush x:Key="AccentText" Color="#CC0000"/>
+    <SolidColorBrush x:Key="FocusedAccentText" Color="#000000"/>
+    <FontFamily x:Key="Font">Comic Sans MS</FontFamily>
+
+    <Color x:Key="GraphBackground"              A="#FF" R="#FF" G="#EF" B="#E7"/>
+    <Color x:Key="GraphAxes"                    A="#FF" R="#FF" G="#99" B="#00"/>
+    <Color x:Key="GraphAxesLabelsOutOfRange"    A="#FF" R="#00" G="#00" B="#00"/>
+    <Color x:Key="GraphMajorGrid"               A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <Color x:Key="GraphMinorGrid"               A="#FF" R="#FF" G="#DE" B="#CB"/>
+    <Color x:Key="GraphPerformanceStats"        A="#FF" R="#00" G="#00" B="#00"/>
+    <Color x:Key="GraphBSPLineInvalid"          A="#FF" R="#FF" G="#00" B="#00"/>
+    <Color x:Key="GraphBSPLineValid"            A="#FF" R="#00" G="#FF" B="#00"/>
+
+</ResourceDictionary>

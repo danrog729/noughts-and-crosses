@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
 
         <TabControl Grid.Column="0">
-            <TabItem Header="Game" Width="132">
+            <TabItem Header="Game" Width="198">
                 <Grid Grid.Column="0" Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
@@ -75,9 +75,9 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Settings" Width="132">
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="Settings" Width="198">
                 <StackPanel>
-                    
+
                     <Grid Margin="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -88,11 +88,16 @@
                         <Button Grid.Column="1" IsEnabled="False" Click="ToggleSplitDirection" Name="GridSplitButtonHorizontal">Horizontal</Button>
                         <Button Grid.Column="2" Click="ToggleSplitDirection"  Name="GridSplitButtonVertical">Vertical</Button>
                     </Grid>
-                    
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center">Theme</TextBlock>
+                        <ComboBox Name="ThemePresetDropdown" Grid.Column="1" SelectionChanged="ThemeChanged"/>
+                    </Grid>
+
                 </StackPanel>
-            </TabItem>
-            <TabItem Header="Customisation" Width="132">
-                
             </TabItem>
         </TabControl>
 

@@ -1,0 +1,54 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <SolidColorBrush x:Key="Background" Color="#242324"/>
+    <SolidColorBrush x:Key="Foreground" Color="#313031"/>
+    <SolidColorBrush x:Key="FocusedForeground" Color="#F1BE64"/>
+    <SolidColorBrush x:Key="DisabledForeground" Color="#3D3D3D"/>
+    
+    <LinearGradientBrush x:Key="BorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#605E5D" Offset="0.0"/>
+        <GradientStop Color="#2B2B2B" Offset="0.05"/>
+        <GradientStop Color="#2B2B2B" Offset="0.95"/>
+        <GradientStop Color="#000000" Offset="1.0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="DisabledBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#000000" Offset="0.0"/>
+        <GradientStop Color="#251E1C" Offset="0.05"/>
+        <GradientStop Color="#251E1C" Offset="0.95"/>
+        <GradientStop Color="#605E5D" Offset="1.0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="FocusedBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F7C87A" Offset="0.0"/>
+        <GradientStop Color="#EEA73B" Offset="0.05"/>
+        <GradientStop Color="#EEA73B" Offset="0.95"/>
+        <GradientStop Color="#442500" Offset="1.0"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#BFBFBF" Offset="0.0"/>
+        <GradientStop Color="#7D7D7D" Offset="0.05"/>
+        <GradientStop Color="#7D7D7D" Offset="0.95"/>
+        <GradientStop Color="#121212" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <Thickness x:Key="BorderThickness">3</Thickness>
+    <SolidColorBrush x:Key="StandardText" Color="#E1E1E1"/>
+    <SolidColorBrush x:Key="ImportantText" Color="#FFE6C0"/>
+    <SolidColorBrush x:Key="FocusedText" Color="#010100"/>
+    <SolidColorBrush x:Key="DisabledText" Color="#666666"/>
+    <SolidColorBrush x:Key="AccentColour" Color="#8E8E8E"/>
+    <SolidColorBrush x:Key="FocusedAccent" Color="#F1BE64"/>
+    <SolidColorBrush x:Key="AccentText" Color="#1D1D1D"/>
+    <SolidColorBrush x:Key="FocusedAccentText" Color="#1D1D1D"/>
+    <FontFamily x:Key="Font">pack://application:,,,/Themes/Fonts/#Titillium Web</FontFamily>
+
+    <Color x:Key="GraphBackground"              A="#FF" R="#11" G="#11" B="#11"/>
+    <Color x:Key="GraphAxes"                    A="#FF" R="#C0" G="#C0" B="#C0"/>
+    <Color x:Key="GraphAxesLabelsOutOfRange"    A="#FF" R="#57" G="#57" B="#57"/>
+    <Color x:Key="GraphMajorGrid"               A="#FF" R="#21" G="#21" B="#21"/>
+    <Color x:Key="GraphMinorGrid"               A="#FF" R="#21" G="#21" B="#21"/>
+    <Color x:Key="GraphPerformanceStats"        A="#FF" R="#F0" G="#F0" B="#F0"/>
+    <Color x:Key="GraphBSPLineInvalid"          A="#FF" R="#FF" G="#00" B="#00"/>
+    <Color x:Key="GraphBSPLineValid"            A="#FF" R="#00" G="#FF" B="#00"/>
+    
+</ResourceDictionary>

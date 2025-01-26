@@ -11,6 +11,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Themes\Fonts\TitilliumWeb-Regular.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Light.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Themes\Fonts\TitilliumWeb-Regular.ttf" />
+    <Resource Include="Themes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
 

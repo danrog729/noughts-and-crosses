@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <SolidColorBrush x:Key="Background" Color="#1e1e1e"/>
+    <SolidColorBrush x:Key="Foreground" Color="#444444"/>
+    <SolidColorBrush x:Key="FocusedForeground" Color="#999999"/>
+    <SolidColorBrush x:Key="DisabledForeground" Color="#1e1e1e"/>
+    <SolidColorBrush x:Key="BorderColour" Color="#888888" />
+    <SolidColorBrush x:Key="DisabledBorderColour" Color="#888888" />
+    <SolidColorBrush x:Key="FocusedBorderColour" Color="#888888" />
+    <SolidColorBrush x:Key="AccentBorderColour" Color="#888888" />
+    <Thickness x:Key="BorderThickness">1</Thickness>
+    <SolidColorBrush x:Key="StandardText" Color="#D3D3D3"/>
+    <SolidColorBrush x:Key="ImportantText" Color="White"/>
+    <SolidColorBrush x:Key="FocusedText" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DisabledText" Color="#6C6C6C"/>
+    <SolidColorBrush x:Key="AccentColour" Color="#51b4ff"/>
+    <SolidColorBrush x:Key="FocusedAccent" Color="#84e7ff"/>
+    <SolidColorBrush x:Key="AccentText" Color="Black"/>
+    <SolidColorBrush x:Key="FocusedAccentText" Color="#000000"/>
+    <FontFamily x:Key="Font">Segoe UI</FontFamily>
+
+    <Color x:Key="GraphBackground"              A="#FF" R="#00" G="#00" B="#00"/>
+    <Color x:Key="GraphAxes"                    A="#FF" R="#C0" G="#C0" B="#C0"/>
+    <Color x:Key="GraphAxesLabelsOutOfRange"    A="#FF" R="#80" G="#80" B="#80"/>
+    <Color x:Key="GraphMajorGrid"               A="#FF" R="#40" G="#40" B="#40"/>
+    <Color x:Key="GraphMinorGrid"               A="#FF" R="#20" G="#20" B="#20"/>
+    <Color x:Key="GraphPerformanceStats"        A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <Color x:Key="GraphBSPLineInvalid"          A="#FF" R="#FF" G="#00" B="#00"/>
+    <Color x:Key="GraphBSPLineValid"            A="#FF" R="#00" G="#FF" B="#00"/>
+
+</ResourceDictionary>

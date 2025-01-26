@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace noughts_and_crosses
@@ -24,6 +25,11 @@ namespace noughts_and_crosses
         public MainWindow()
         {
             InitializeComponent();
+
+            foreach (Theme theme in App.MainApp.themes)
+            {
+                ThemePresetDropdown.Items.Add(new ComboBoxItem() { Content = theme.Name });
+            }
 
             int size = 3;
             int dimensions = 2;
@@ -355,6 +361,8 @@ namespace noughts_and_crosses
             MediumBotButton.IsEnabled = false;
             HardBotButton.IsEnabled = false;
             PlayerButton.IsEnabled = false;
+            SizeSlider.IsEnabled = false;
+            DimensionSlider.IsEnabled = false;
             StartButton.Content = "Stop Game";
 
             if (gameManager.GameFinished)
@@ -378,6 +386,8 @@ namespace noughts_and_crosses
             MediumBotButton.IsEnabled = true;
             HardBotButton.IsEnabled = true;
             PlayerButton.IsEnabled = true;
+            SizeSlider.IsEnabled = true;
+            DimensionSlider.IsEnabled = true;
             StartButton.Content = "Start Game";
 
             // Add wins, losses, draws to all playercards
@@ -410,6 +420,13 @@ namespace noughts_and_crosses
             GridSplitButtonHorizontal.IsEnabled = !GridSplitButtonHorizontal.IsEnabled;
             GridSplitButtonVertical.IsEnabled = !GridSplitButtonVertical.IsEnabled;
             gameManager.SwitchSplitDirection();
+        }
+
+
+
+        private  void ThemeChanged(object sender, RoutedEventArgs e)
+        {
+            App.MainApp.CurrentTheme = App.MainApp.themes[ThemePresetDropdown.SelectedIndex];
         }
     }
 }

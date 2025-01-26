@@ -1,0 +1,84 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <LinearGradientBrush x:Key="Background" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#5E616A" Offset="0.0"/>
+        <GradientStop Color="#343840" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Foreground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#5E616A" Offset="0.0"/>
+        <GradientStop Color="#5E616A" Offset="0.45"/>
+        <GradientStop Color="#4C4F57" Offset="0.50"/>
+        <GradientStop Color="#33373F" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="FocusedForeground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#B9BEC0" Offset="0.0"/>
+        <GradientStop Color="#899396" Offset="0.45"/>
+        <GradientStop Color="#757E82" Offset="0.50"/>
+        <GradientStop Color="#9CA1A3" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DisabledForeground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#50535C" Offset="0.0"/>
+        <GradientStop Color="#4F525A" Offset="0.45"/>
+        <GradientStop Color="#454851" Offset="0.50"/>
+        <GradientStop Color="#373B43" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="BorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#85888F" Offset="0.0"/>
+        <GradientStop Color="#17171A" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DisabledBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#64676F" Offset="0.0"/>
+        <GradientStop Color="#282A30" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="FocusedBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#BBBEC0" Offset="0.0"/>
+        <GradientStop Color="#818688" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AccentBorderColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#BCE0E6" Offset="0.0"/>
+        <GradientStop Color="#17919F" Offset="0.5"/>
+        <GradientStop Color="#00393E" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <Thickness x:Key="BorderThickness">2</Thickness>
+    <SolidColorBrush x:Key="StandardText" Color="#D4F4FD"/>
+    <SolidColorBrush x:Key="ImportantText" Color="#B7FE00"/>
+    <SolidColorBrush x:Key="FocusedText" Color="#D4F4FD"/>
+    <SolidColorBrush x:Key="DisabledText" Color="#8FA1AA"/>
+    
+    <LinearGradientBrush x:Key="AccentColour" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#1FC0CF" Offset="0.0"/>
+        <GradientStop Color="#18BECE" Offset="0.45"/>
+        <GradientStop Color="#01A6B6" Offset="0.50"/>
+        <GradientStop Color="#00717B" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="FocusedAccent" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#61F7FF" Offset="0.0"/>
+        <GradientStop Color="#42F7FF" Offset="0.45"/>
+        <GradientStop Color="#00D3EA" Offset="0.50"/>
+        <GradientStop Color="#00A6B5" Offset="1.0"/>
+    </LinearGradientBrush>
+    
+    <SolidColorBrush x:Key="AccentText" Color="#16424D"/>
+    <SolidColorBrush x:Key="FocusedAccentText" Color="#EFFFDF"/>
+    <FontFamily x:Key="Font">Corbel Bold</FontFamily>
+
+    <Color x:Key="GraphBackground"              A="#FF" R="#4A" G="#56" B="#62"/>
+    <Color x:Key="GraphAxes"                    A="#FF" R="#F1" G="#8E" B="#00"/>
+    <Color x:Key="GraphAxesLabelsOutOfRange"    A="#FF" R="#BE" G="#BF" B="#C0"/>
+    <Color x:Key="GraphMajorGrid"               A="#FF" R="#BE" G="#BF" B="#C0"/>
+    <Color x:Key="GraphMinorGrid"               A="#FF" R="#84" G="#84" B="#85"/>
+    <Color x:Key="GraphPerformanceStats"        A="#FF" R="#D1" G="#D1" B="#D2"/>
+    <Color x:Key="GraphBSPLineInvalid"          A="#FF" R="#FF" G="#00" B="#00"/>
+    <Color x:Key="GraphBSPLineValid"            A="#FF" R="#00" G="#FF" B="#00"/>
+
+</ResourceDictionary>
