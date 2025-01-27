@@ -11,6 +11,8 @@ namespace noughts_and_crosses
         private ImageRenderer image;
         private Matrix4D OrthoToImageMatrix;
 
+        public System.Drawing.Color backgroundColour;
+
         public Scene3D(ref System.Windows.Controls.Image canvas)
         {
             image = new ImageRenderer(750, 750);
@@ -21,6 +23,8 @@ namespace noughts_and_crosses
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
             Wireframe = true;
             image.showDepthMap = false;
+
+            backgroundColour = Color.White;
         }
 
         public void NewSize(int width, int height, ref System.Windows.Controls.Image controlImage)
@@ -50,7 +54,7 @@ namespace noughts_and_crosses
         public void Render()
         {
             image.LockBuffer();
-            image.Fill(Color.White);
+            image.Fill(backgroundColour);
 
             Matrix4D WorldToImageMatrix = OrthoToImageMatrix * Camera.OrthographicMatrix * Camera.PerspectiveMatrix * Matrix4D.ScaleMatrix(new Vector3D(1.0f, 1.0f, -1.0f)) * Camera.CameraSpaceMatrix;
 

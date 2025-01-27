@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
 
         <TabControl Grid.Column="0">
-            <TabItem Header="Game" Width="198">
+            <TabItem Header="Game" Width="198" Style="{DynamicResource TabItemStyle}">
                 <Grid Grid.Column="0" Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
@@ -29,10 +29,10 @@
                             <ColumnDefinition Width="70"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right">Size</TextBlock>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5">Size</TextBlock>
                         <Slider Grid.Column="1" VerticalAlignment="Center" Name="SizeSlider" ValueChanged="SizeSliderMoved"
                                 Value="3" Minimum="1" Maximum="5" IsSnapToTickEnabled="True" TickPlacement="BottomRight"></Slider>
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="SizeInput" TextChanged="SizeTextChanged">3</TextBox>
+                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="SizeInput" TextChanged="SizeTextChanged" Margin="5">3</TextBox>
                     </Grid>
 
                     <Grid Grid.Row="1" Margin="20, 10, 20, 10">
@@ -42,10 +42,10 @@
                             <ColumnDefinition Width="70"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right">Dimensions</TextBlock>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">Dimensions</TextBlock>
                         <Slider Grid.Column="1" VerticalAlignment="Center" Name="DimensionSlider" ValueChanged="DimensionSliderMoved"
                             Value="2" Minimum="1" Maximum="3" IsSnapToTickEnabled="True" TickPlacement="BottomRight"></Slider>
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="DimensionInput" TextChanged="DimensionTextChanged">2</TextBox>
+                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="DimensionInput" TextChanged="DimensionTextChanged" Margin="5">2</TextBox>
                     </Grid>
 
                     <Grid Grid.Row="2" Margin="20">

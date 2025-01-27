@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:noughts_and_crosses"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="360">
-    <Grid Background="White">
+    <Grid Background="{DynamicResource Foreground}" Name="PlayerCardBackground">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition/>
@@ -17,11 +17,11 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Button Margin="5" Width="30" Height="30" Grid.Row="0" Grid.Column="0" Click="OpenPopup">
+        <Button Margin="5" Width="30" Height="30" Grid.Row="0" Grid.Column="0" Click="OpenPopup" Name="IconButton">
             <Canvas Name="Icon">
                 <Popup Name="IconPopup" StaysOpen="False" Placement="Bottom">
-                    <Border>
-                        <Grid Background="White">
+                    <Border BorderBrush="{DynamicResource Background}" BorderThickness="{DynamicResource BorderThickness}">
+                        <Grid Background="{DynamicResource Foreground}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="60"/>
                                 <ColumnDefinition Width="60"/>
@@ -43,20 +43,20 @@
 
                             <Button Grid.Row="3" Grid.Column="0" BorderThickness="2" Margin="5" Click="CrossClicked">
                                 <Canvas>
-                                    <Line X1="-17.5" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="Black" StrokeThickness="2"/>
-                                    <Line X1="-17.5" Y1="17.5" X2="17.5" Y2="-17.5" Stroke="Black" StrokeThickness="2"/>
+                                    <Line X1="-17.5" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    <Line X1="-17.5" Y1="17.5" X2="17.5" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
                                 </Canvas>
                             </Button>
                             <Button Grid.Row="3" Grid.Column="1" BorderThickness="2" Margin="5" Click="NoughtClicked">
                                 <Canvas>
-                                    <Ellipse Canvas.Top="-20" Canvas.Left="-20" Width="40" Height="40" Stroke="Black" StrokeThickness="2"/>
+                                    <Ellipse Canvas.Top="-20" Canvas.Left="-20" Width="40" Height="40" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
                                 </Canvas>
                             </Button>
                             <Button Grid.Row="3" Grid.Column="2" BorderThickness="2" Margin="5" Click="TetrahedronClicked">
                                 <Canvas>
-                                    <Line X1="0" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="Black" StrokeThickness="2"/>
-                                    <Line X1="17.5" Y1="17.5" X2="-17.5" Y2="17.5" Stroke="Black" StrokeThickness="2"/>
-                                    <Line X1="-17.5" Y1="17.5" X2="0" Y2="-17.5" Stroke="Black" StrokeThickness="2"/>
+                                    <Line X1="0" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    <Line X1="17.5" Y1="17.5" X2="-17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    <Line X1="-17.5" Y1="17.5" X2="0" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
                                 </Canvas>
                             </Button>
                         </Grid>
@@ -66,7 +66,7 @@
         </Button>
         
         <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged">Player</TextBox>
-        <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked">X</Button>
+        <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked" FontSize="16">🗙</Button>
         <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScoreCardScroll">
             <StackPanel Name="ScoreCard" Margin="5" Orientation="Horizontal"/>
         </ScrollViewer>

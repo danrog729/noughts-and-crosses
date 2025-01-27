@@ -44,6 +44,26 @@ namespace noughts_and_crosses
             set => _playerNumber = value;
         }
 
+        private bool _isCurrentPlayer;
+        public bool IsCurrentPlayer
+        {
+            get => _isCurrentPlayer;
+            set
+            {
+                _isCurrentPlayer = value;
+                if (value)
+                {
+                    // set the colours and everything to make this obviously the current player
+                    PlayerCardBackground.Background = (System.Windows.Media.Brush)App.MainApp.FindResource("FocusedForeground");
+                }
+                else
+                {
+                    // reset the colours back to normal
+                    PlayerCardBackground.Background = (System.Windows.Media.Brush)App.MainApp.FindResource("Foreground");
+                }
+            }
+        }
+
         private bool openingPopup;
 
         public PlayerCard()
@@ -51,6 +71,7 @@ namespace noughts_and_crosses
             InitializeComponent();
             _playerName = UsernameTextbox.Text;
             icon = new IconCross(_colour);
+            IconPopup.PlacementTarget = IconButton;
         }
 
         private void DeleteButtonClicked(object sender, RoutedEventArgs e)
@@ -77,6 +98,7 @@ namespace noughts_and_crosses
             RedSlider.Value = _colour.R;
             GreenSlider.Value = _colour.G;
             BlueSlider.Value = _colour.B;
+            IconPopup.Resources = App.MainApp.Resources;
             openingPopup = false;
         }
 

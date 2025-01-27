@@ -8,6 +8,10 @@ namespace noughts_and_crosses
         public PlayerOrientedBoard board;
         public Scene3D scene;
 
+        public System.Drawing.Color backgroundColour;
+        public System.Drawing.Color mainBoxColour;
+        public System.Drawing.Color subBoxColour;
+
         private Vector3D _stretches;
         public Vector3D Stretches
         {
@@ -98,6 +102,10 @@ namespace noughts_and_crosses
             {
                 PlayBotMoves();
             }
+
+            backgroundColour = System.Drawing.Color.White;
+            mainBoxColour = System.Drawing.Color.Black;
+            subBoxColour = System.Drawing.Color.Gray;
         }
 
         private void MakeGrid()
@@ -287,7 +295,7 @@ namespace noughts_and_crosses
                                 board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
                                 )
                         {
-                            colour = System.Drawing.Color.Black
+                            colour = mainBoxColour
                         });
                     }
                 }
@@ -349,6 +357,19 @@ namespace noughts_and_crosses
             {
                 SplitDirection.X = 1.0f;
                 SplitDirection.Y = 0.0f;
+            }
+        }
+
+        public void ResetColours()
+        {
+            scene.backgroundColour = backgroundColour;
+            if (scene.rootObject != null)
+            {
+                scene.rootObject.colour = mainBoxColour;
+                foreach (Object3D child in scene.rootObject.children)
+                {
+                    child.colour = subBoxColour;
+                }
             }
         }
     }

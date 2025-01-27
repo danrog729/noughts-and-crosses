@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Drawing;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace noughts_and_crosses
 {
@@ -30,11 +32,13 @@ namespace noughts_and_crosses
             {
                 ThemePresetDropdown.Items.Add(new ComboBoxItem() { Content = theme.Name });
             }
+            ThemePresetDropdown.SelectedIndex = 0;
 
             int size = 3;
             int dimensions = 2;
 
             gameManager = new GameManager(size, dimensions, players, ref Viewport);
+            UpdateRenderColours();
             gameManager.Render();
         }
 
@@ -75,6 +79,12 @@ namespace noughts_and_crosses
                 gameManager.MouseClicked((int)position.X, (int)position.Y);
                 leftMousePressedLast = false;
 
+                // Set the current player
+                ((PlayerCard)PlayerCardContainer.Children[gameManager.CurrentPlayer - 1]).IsCurrentPlayer = true;
+                int previousPlayer = gameManager.CurrentPlayer - 1;
+                if (previousPlayer == 0) previousPlayer = gameManager.PlayerCount;
+                ((PlayerCard)PlayerCardContainer.Children[previousPlayer - 1]).IsCurrentPlayer = false;
+
                 // if wins, end the game
                 if (gameManager.GameFinished)
                 {
@@ -110,6 +120,7 @@ namespace noughts_and_crosses
                 gameManager.Size = 1;
                 oldSizeText = SizeInput.Text;
                 SizeSlider.Value = 1;
+                gameManager.ResetColours();
                 gameManager.Render();
             }
             if (Int32.TryParse(SizeInput.Text, out int value))
@@ -117,6 +128,7 @@ namespace noughts_and_crosses
                 gameManager.Size = value;
                 oldSizeText = SizeInput.Text;
                 SizeSlider.Value = value;
+                gameManager.ResetColours();
                 gameManager.Render();
             }
             else
@@ -135,6 +147,7 @@ namespace noughts_and_crosses
             gameManager.Size = value;
             SizeInput.Text = value.ToString();
             oldSizeText = SizeInput.Text;
+            gameManager.ResetColours();
             gameManager.Render();
         }
 
@@ -149,6 +162,7 @@ namespace noughts_and_crosses
                 gameManager.Dimensions = 1;
                 oldDimensionText = DimensionInput.Text;
                 DimensionSlider.Value = 1;
+                gameManager.ResetColours();
                 gameManager.Render();
             }
             if (Int32.TryParse(DimensionInput.Text, out int value))
@@ -166,6 +180,7 @@ namespace noughts_and_crosses
                     DimensionSlider.Value = value;
                     oldDimensionText = DimensionInput.Text;
                 }
+                gameManager.ResetColours();
                 gameManager.Render();
             }
             else
@@ -184,6 +199,7 @@ namespace noughts_and_crosses
             gameManager.Dimensions = value;
             DimensionInput.Text = value.ToString();
             oldDimensionText = DimensionInput.Text;
+            gameManager.ResetColours();
             gameManager.Render();
         }
 
@@ -344,9 +360,30 @@ namespace noughts_and_crosses
                 return;
             }
             // Start the game
+
+            System.Drawing.Color backgroundColour = gameManager.backgroundColour;
+            System.Drawing.Color mainBoxColour = gameManager.mainBoxColour;
+            System.Drawing.Color subBoxColour = gameManager.subBoxColour;
+            Quaternion rotation = gameManager.scene.rootObject == null ? new Quaternion(1.0f, 0.0f, 0.0f, 0.0f) : gameManager.scene.rootObject.Rotation;
+            Vector3D stretches = gameManager.Stretches;
+
             gameManager = new GameManager(Int32.Parse(SizeInput.Text), Int32.Parse(DimensionInput.Text), players, ref Viewport);
+
             gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
+            gameManager.backgroundColour = backgroundColour;
+            gameManager.mainBoxColour = mainBoxColour;
+            gameManager.subBoxColour = subBoxColour;
+            if (gameManager.scene.rootObject != null) gameManager.scene.rootObject.Rotation = rotation;
+            gameManager.Stretches = stretches;
+
+            gameManager.ResetColours();
             gameManager.Render();
+
+            // Set the current player
+            ((PlayerCard)PlayerCardContainer.Children[gameManager.CurrentPlayer - 1]).IsCurrentPlayer = true;
+            int previousPlayer = gameManager.CurrentPlayer - 1;
+            if (previousPlayer == 0) previousPlayer = gameManager.PlayerCount;
+            ((PlayerCard)PlayerCardContainer.Children[previousPlayer - 1]).IsCurrentPlayer = false;
 
             // Disable controls
             gameStarted = true;
@@ -411,6 +448,12 @@ namespace noughts_and_crosses
                     card.AddLoss();
                 }
             }
+
+            // update all the player cards to be not the current player
+            foreach (PlayerCard card in PlayerCardContainer.Children)
+            {
+                card.IsCurrentPlayer = false;
+            }
         }
 
 
@@ -424,9 +467,60 @@ namespace noughts_and_crosses
 
 
 
-        private  void ThemeChanged(object sender, RoutedEventArgs e)
+        private void ThemeChanged(object sender, RoutedEventArgs e)
         {
             App.MainApp.CurrentTheme = App.MainApp.themes[ThemePresetDropdown.SelectedIndex];
+            if (gameManager != null)
+            {
+                UpdateRenderColours();
+                gameManager.Render();
+            }
+
+            // update all the player cards to be the correct colour
+            foreach (PlayerCard card in PlayerCardContainer.Children)
+            {
+                card.IsCurrentPlayer = card.IsCurrentPlayer;
+            }
+        }
+
+        private void UpdateRenderColours()
+        {
+            // background colour
+            System.Windows.Media.Color backColour;
+            object background = App.MainApp.FindResource("Background");
+            if (background is System.Windows.Media.SolidColorBrush)
+            {
+                System.Windows.Media.SolidColorBrush backgroundBrush = (System.Windows.Media.SolidColorBrush)(App.MainApp.FindResource("Background"));
+                backColour = backgroundBrush.Color;
+            }
+            else if (background is System.Windows.Media.GradientBrush)
+            {
+                System.Windows.Media.GradientBrush backgroundBrush = (System.Windows.Media.GradientBrush)(App.MainApp.FindResource("Background"));
+                backColour = backgroundBrush.GradientStops[0].Color;
+            }
+            gameManager.backgroundColour = System.Drawing.Color.FromArgb(backColour.A, backColour.R, backColour.G, backColour.B);
+
+            // main box colour
+            System.Windows.Media.Color mainColour;
+            System.Windows.Media.SolidColorBrush importantText = (System.Windows.Media.SolidColorBrush)App.MainApp.FindResource("ImportantText");
+            mainColour = importantText.Color;
+            if (gameManager.scene.rootObject == null)
+            {
+                return;
+            }
+            gameManager.mainBoxColour = System.Drawing.Color.FromArgb(mainColour.A, mainColour.R, mainColour.G, mainColour.B);
+
+            // other box colour
+            System.Windows.Media.Color otherColour;
+            System.Windows.Media.SolidColorBrush standardText = (System.Windows.Media.SolidColorBrush)App.MainApp.FindResource("StandardText");
+            otherColour = standardText.Color;
+            if (gameManager.scene.rootObject == null)
+            {
+                return;
+            }
+            gameManager.subBoxColour = System.Drawing.Color.FromArgb(otherColour.A, otherColour.R, otherColour.G, otherColour.B);
+
+            gameManager.ResetColours();
         }
     }
 }
