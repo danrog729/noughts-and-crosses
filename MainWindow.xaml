@@ -96,6 +96,16 @@
                         <TextBlock Grid.Column="0" VerticalAlignment="Center">Theme</TextBlock>
                         <ComboBox Name="ThemePresetDropdown" Grid.Column="1" SelectionChanged="ThemeChanged"/>
                     </Grid>
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center">Sounds</TextBlock>
+                        <Button Grid.Column="1" IsEnabled="False" Click="ToggleSounds" Name="SoundsEnableButton">Enable</Button>
+                        <Button Grid.Column="2" Click="ToggleSounds" Name="SoundsDisableButton">Disable</Button>
+                    </Grid>
 
                 </StackPanel>
             </TabItem>

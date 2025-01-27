@@ -16,6 +16,35 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{DynamicResource BorderThickness}">
+                        <TextBlock x:Name="textblock" Margin="2" Style="{DynamicResource StandardTextBlock}" Text="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource FocusedForeground}" />
+                            <Setter Property="Foreground" TargetName="textblock" Value="{DynamicResource FocusedText}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource FocusedBorderColour}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{DynamicResource DisabledForeground}"/>
+                            <Setter Property="Foreground" TargetName="textblock" Value="{DynamicResource DisabledText}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource DisabledBorderColour}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CanvasButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource Foreground}" />
+        <Setter Property="Foreground" Value="{DynamicResource StandardText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderColour}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource BorderThickness}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{DynamicResource BorderThickness}">
                         <ContentPresenter Name="content" Content="{TemplateBinding Content}" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>

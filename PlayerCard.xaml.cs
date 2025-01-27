@@ -54,17 +54,39 @@ namespace noughts_and_crosses
                 if (value)
                 {
                     // set the colours and everything to make this obviously the current player
-                    PlayerCardBackground.Background = (System.Windows.Media.Brush)App.MainApp.FindResource("FocusedForeground");
+                    System.Windows.Media.Brush foreground = (System.Windows.Media.Brush)App.MainApp.FindResource("FocusedForeground");
+                    PlayerCardBackground.Background = foreground;
+                    WinCountText.Background = foreground;
+                    DrawCountText.Background = foreground;
+                    LossCountText.Background = foreground;
+                    System.Windows.Media.Brush text = (System.Windows.Media.Brush)App.MainApp.FindResource("FocusedText");
+                    UsernameTextbox.Foreground = text;
+                    WinCountText.Foreground = text;
+                    LossCountText.Foreground = text;
+                    DrawCountText.Foreground = text;
                 }
                 else
                 {
                     // reset the colours back to normal
-                    PlayerCardBackground.Background = (System.Windows.Media.Brush)App.MainApp.FindResource("Foreground");
+                    System.Windows.Media.Brush foreground = (System.Windows.Media.Brush)App.MainApp.FindResource("Foreground");
+                    PlayerCardBackground.Background = foreground;
+                    WinCountText.Background = foreground;
+                    DrawCountText.Background = foreground;
+                    LossCountText.Background = foreground;
+                    System.Windows.Media.Brush text = (System.Windows.Media.Brush)App.MainApp.FindResource("StandardText");
+                    UsernameTextbox.Foreground = (System.Windows.Media.Brush)App.MainApp.FindResource("ImportantText");
+                    WinCountText.Foreground = text;
+                    LossCountText.Foreground = text;
+                    DrawCountText.Foreground = text;
                 }
             }
         }
 
         private bool openingPopup;
+
+        private int winCount;
+        private int drawCount;
+        private int lossCount;
 
         public PlayerCard()
         {
@@ -72,6 +94,9 @@ namespace noughts_and_crosses
             _playerName = UsernameTextbox.Text;
             icon = new IconCross(_colour);
             IconPopup.PlacementTarget = IconButton;
+            winCount = 0;
+            drawCount = 0;
+            lossCount = 0;
         }
 
         private void DeleteButtonClicked(object sender, RoutedEventArgs e)
@@ -149,6 +174,8 @@ namespace noughts_and_crosses
             rectangle.Width = 20;
             rectangle.Height = 20;
             rectangle.Margin = new Thickness(2.5);
+            winCount++;
+            WinCountText.Text = "Wins: " + winCount.ToString();
 
             ScoreCard.Children.Add(rectangle);
         }
@@ -160,6 +187,8 @@ namespace noughts_and_crosses
             rectangle.Width = 20;
             rectangle.Height = 20;
             rectangle.Margin = new Thickness(2.5);
+            drawCount++;
+            DrawCountText.Text = "Draws: " + drawCount.ToString();
 
             ScoreCard.Children.Add(rectangle);
         }
@@ -171,6 +200,8 @@ namespace noughts_and_crosses
             rectangle.Width = 20;
             rectangle.Height = 20;
             rectangle.Margin = new Thickness(2.5);
+            lossCount++;
+            LossCountText.Text = "Losses: " + lossCount.ToString();
 
             ScoreCard.Children.Add(rectangle);
         }

@@ -123,7 +123,7 @@ namespace noughts_and_crosses
                 gameManager.ResetColours();
                 gameManager.Render();
             }
-            if (Int32.TryParse(SizeInput.Text, out int value))
+            if (Int32.TryParse(SizeInput.Text, out int value) && value >= 1)
             {
                 gameManager.Size = value;
                 oldSizeText = SizeInput.Text;
@@ -463,6 +463,12 @@ namespace noughts_and_crosses
             GridSplitButtonHorizontal.IsEnabled = !GridSplitButtonHorizontal.IsEnabled;
             GridSplitButtonVertical.IsEnabled = !GridSplitButtonVertical.IsEnabled;
             gameManager.SwitchSplitDirection();
+        }
+
+        private void ToggleSounds(object sender, RoutedEventArgs e)
+        {
+            SoundsEnableButton.IsEnabled = !SoundsEnableButton.IsEnabled;
+            SoundsDisableButton.IsEnabled = !SoundsDisableButton.IsEnabled;
         }
 
 

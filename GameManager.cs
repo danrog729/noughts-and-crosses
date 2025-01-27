@@ -18,7 +18,7 @@ namespace noughts_and_crosses
             get => _stretches;
             set
             {
-                if (board.Size == 1)
+                if (board.Size <= 1)
                 {
                     _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
                 }

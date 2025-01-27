@@ -6,69 +6,82 @@
              xmlns:local="clr-namespace:noughts_and_crosses"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="360">
-    <Grid Background="{DynamicResource Foreground}" Name="PlayerCardBackground">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="40"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <Border BorderBrush="{DynamicResource BorderColour}" BorderThickness="{DynamicResource BorderThickness}">
+        <Grid Background="{DynamicResource Foreground}" Name="PlayerCardBackground">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <Button Margin="5" Width="30" Height="30" Grid.Row="0" Grid.Column="0" Click="OpenPopup" Name="IconButton">
-            <Canvas Name="Icon">
-                <Popup Name="IconPopup" StaysOpen="False" Placement="Bottom">
-                    <Border BorderBrush="{DynamicResource Background}" BorderThickness="{DynamicResource BorderThickness}">
-                        <Grid Background="{DynamicResource Foreground}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="60"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="60"/>
-                            </Grid.RowDefinitions>
+            <Button Margin="5" Width="30" Height="30" Grid.Row="0" Grid.Column="0" Click="OpenPopup" Name="IconButton" Style="{DynamicResource CanvasButton}">
+                <Canvas Name="Icon">
+                    <Popup Name="IconPopup" StaysOpen="False" Placement="Bottom">
+                        <Border BorderBrush="{DynamicResource Background}" BorderThickness="{DynamicResource BorderThickness}">
+                            <Grid Background="{DynamicResource Foreground}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="60"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="60"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center">Red</TextBlock>
-                            <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="RedSlider"/>
-                            <TextBlock Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center">Green</TextBlock>
-                            <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="GreenSlider"/>
-                            <TextBlock Grid.Column="0" Grid.Row="2" Margin="10,0,10,0" VerticalAlignment="Center">Blue</TextBlock>
-                            <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="BlueSlider"/>
+                                <TextBlock Grid.Column="0" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center">Red</TextBlock>
+                                <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="RedSlider"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center">Green</TextBlock>
+                                <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="GreenSlider"/>
+                                <TextBlock Grid.Column="0" Grid.Row="2" Margin="10,0,10,0" VerticalAlignment="Center">Blue</TextBlock>
+                                <Slider Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" Margin="10,0,10,0" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="ColourSliderMoved" Name="BlueSlider"/>
 
-                            <Button Grid.Row="3" Grid.Column="0" BorderThickness="2" Margin="5" Click="CrossClicked">
-                                <Canvas>
-                                    <Line X1="-17.5" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                    <Line X1="-17.5" Y1="17.5" X2="17.5" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                </Canvas>
-                            </Button>
-                            <Button Grid.Row="3" Grid.Column="1" BorderThickness="2" Margin="5" Click="NoughtClicked">
-                                <Canvas>
-                                    <Ellipse Canvas.Top="-20" Canvas.Left="-20" Width="40" Height="40" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                </Canvas>
-                            </Button>
-                            <Button Grid.Row="3" Grid.Column="2" BorderThickness="2" Margin="5" Click="TetrahedronClicked">
-                                <Canvas>
-                                    <Line X1="0" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                    <Line X1="17.5" Y1="17.5" X2="-17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                    <Line X1="-17.5" Y1="17.5" X2="0" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                </Canvas>
-                            </Button>
-                        </Grid>
-                    </Border>
-                </Popup>
-            </Canvas>
-        </Button>
-        
-        <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged">Player</TextBox>
-        <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked" FontSize="16">🗙</Button>
-        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScoreCardScroll">
-            <StackPanel Name="ScoreCard" Margin="5" Orientation="Horizontal"/>
-        </ScrollViewer>
-    </Grid>
+                                <Button Grid.Row="3" Grid.Column="0" BorderThickness="2" Margin="5" Click="CrossClicked" Style="{DynamicResource CanvasButton}">
+                                    <Canvas>
+                                        <Line X1="-17.5" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                        <Line X1="-17.5" Y1="17.5" X2="17.5" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    </Canvas>
+                                </Button>
+                                <Button Grid.Row="3" Grid.Column="1" BorderThickness="2" Margin="5" Click="NoughtClicked" Style="{DynamicResource CanvasButton}">
+                                    <Canvas>
+                                        <Ellipse Canvas.Top="-20" Canvas.Left="-20" Width="40" Height="40" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    </Canvas>
+                                </Button>
+                                <Button Grid.Row="3" Grid.Column="2" BorderThickness="2" Margin="5" Click="TetrahedronClicked" Style="{DynamicResource CanvasButton}">
+                                    <Canvas>
+                                        <Line X1="0" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                        <Line X1="17.5" Y1="17.5" X2="-17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                        <Line X1="-17.5" Y1="17.5" X2="0" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                    </Canvas>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Popup>
+                </Canvas>
+            </Button>
+
+            <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged" FontSize="20">Player</TextBox>
+            <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked" FontSize="16">🗙</Button>
+            <Grid Margin="5,0,5,0" Grid.Row="1" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Name="WinCountText">Wins: 0</TextBlock>
+                <TextBlock Grid.Column="1" Name="DrawCountText">Draws: 0</TextBlock>
+                <TextBlock Grid.Column="2" Name="LossCountText">Losses: 0</TextBlock>
+            </Grid>
+            <ScrollViewer Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" PreviewMouseWheel="ScoreCardScroll">
+                <StackPanel Name="ScoreCard" Margin="5" Orientation="Horizontal" Height="25"/>
+            </ScrollViewer>
+        </Grid>
+    </Border>
 </UserControl>
