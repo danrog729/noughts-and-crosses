@@ -178,32 +178,26 @@ namespace noughts_and_crosses
             Stretches = new Vector3D(_stretches.X + smallestAngle.X * delta, _stretches.Y + smallestAngle.Y * delta, _stretches.Z + smallestAngle.Z * delta);
         }
 
-        public void MouseClicked(int positionX, int positionY)
+        public bool MouseClicked(int positionX, int positionY)
         {
-            // Return if the scene has no root
-            if (scene.rootObject == null)
+            // Return if the scene has no root or current player is a bot
+            if (scene.rootObject == null || Players[CurrentPlayer - 1] is BotPlayer)
             {
-                return;
-            }
-
-            // Return if the current player is a bot
-            if (Players[CurrentPlayer - 1] is BotPlayer)
-            {
-                return;
+                return false;
             }
 
             // Find which object was clicked on
             Object3D? clickedObject = scene.FindObjectAtPixel(positionX, positionY);
             if (clickedObject == null)
             {
-                return;
+                return false;
             }
 
             // Find the index of the clicked cell and return if the cell there isn't empty
             int boardIndex = scene.rootObject.children.IndexOf(clickedObject);
             if (board[boardIndex] != 0)
             {
-                return;
+                return false;
             }
 
             // Set the board's cell to have the correct number
@@ -232,6 +226,7 @@ namespace noughts_and_crosses
             {
                 PlayBotMoves();
             }
+            return true;
         }
 
         public void MouseMoved(float deltaX, float deltaY)
@@ -349,13 +344,24 @@ namespace noughts_and_crosses
 
         public void ResetColours()
         {
+            // colour background
             scene.backgroundColour = backgroundColour;
             if (scene.rootObject != null)
             {
+                // root object is main box, colour accordingly
                 scene.rootObject.colour = mainBoxColour;
-                foreach (Object3D child in scene.rootObject.children)
+                for (int childIndex = 0; childIndex < scene.rootObject.children.Count; childIndex++)
                 {
-                    child.colour = subBoxColour;
+                    if (childIndex < board.Length)
+                    {
+                        // sub-box, colour accordingly
+                        scene.rootObject.children[childIndex].colour = subBoxColour;
+                    }
+                    else
+                    {
+                        // winning line, colour accordingly
+                        scene.rootObject.children[childIndex].colour = mainBoxColour;
+                    }
                 }
             }
         }

@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <None Remove="Themes\Fonts\TitilliumWeb-Regular.ttf" />
+    <None Remove="Themes\Sounds\move.wav" />
+    <None Remove="Themes\Sounds\win.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +24,12 @@
     <Resource Include="Themes\Fonts\TitilliumWeb-Regular.ttf" />
     <Resource Include="Themes\Light.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Themes\Sounds\move.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Themes\Sounds\win.wav">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

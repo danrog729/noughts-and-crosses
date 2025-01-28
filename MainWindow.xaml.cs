@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -76,7 +77,10 @@ namespace noughts_and_crosses
             {
                 // handle the placement
                 System.Windows.Point position = e.GetPosition(Viewport);
-                gameManager.MouseClicked((int)position.X, (int)position.Y);
+                if (gameManager.MouseClicked((int)position.X, (int)position.Y))
+                {
+                    App.MainApp.moveSound.Play();
+                }
                 leftMousePressedLast = false;
 
                 // Set the current player
@@ -88,6 +92,15 @@ namespace noughts_and_crosses
                 // if wins, end the game
                 if (gameManager.GameFinished)
                 {
+                    if (gameManager.winningPlayer != 0)
+                    {
+                        App.MainApp.winSound.Play();
+                        MessageBox.Show(((PlayerCard)(PlayerCardContainer.Children[gameManager.winningPlayer - 1])).PlayerName + " won!");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Draw!");
+                    }
                     GameEnded();
                 }
             }
@@ -469,6 +482,7 @@ namespace noughts_and_crosses
         {
             SoundsEnableButton.IsEnabled = !SoundsEnableButton.IsEnabled;
             SoundsDisableButton.IsEnabled = !SoundsDisableButton.IsEnabled;
+            App.MainApp.soundsOn = !App.MainApp.soundsOn;
         }
 
 
