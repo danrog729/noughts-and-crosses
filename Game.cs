@@ -520,7 +520,7 @@ namespace noughts_and_crosses
                     board[index] = currentPlayer;
                     int nextPlayer = currentPlayer % (int)board.PlayerCount + 1;
 
-                    int[] eval = MaxN(ref board, nextPlayer, index, 15 / board.Size, maxEval[currentPlayer - 1]);
+                    int[] eval = MaxN(ref board, nextPlayer, index, 64 / board.Empties, maxEval[currentPlayer - 1]);
                     if (!foundMove || eval[currentPlayer - 1] > maxEval[currentPlayer - 1])
                     {
                         maxEval = eval;
@@ -562,7 +562,14 @@ namespace noughts_and_crosses
 
             // If terminal state or max depth reached, return the evaluation of the board
 
-            if (board.Empties == 0)
+            int winningPlayer = board.WinExists(mostRecentPlacement, false);
+            if (winningPlayer != 0)
+            {
+                // win
+                maxEval[winningPlayer - 1] = board.MaxPlayerEval;
+                return maxEval;
+            }
+            else if (board.Empties == 0)
             {
                 // draw
                 for (int player = 0; player < board.PlayerCount; player++)
@@ -578,16 +585,6 @@ namespace noughts_and_crosses
                     maxEval[player] = 1;
                 }
                 return maxEval;
-            }
-            else
-            {
-                int winningPlayer = board.WinExists(mostRecentPlacement, false);
-                if (winningPlayer != 0)
-                {
-                    // win
-                    maxEval[winningPlayer - 1] = board.MaxPlayerEval;
-                    return maxEval;
-                }
             }
 
             // Look at the game's children and maximise the evaluation for the current player

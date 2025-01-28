@@ -295,14 +295,15 @@ namespace noughts_and_crosses
                 board[selection] = CurrentPlayer;
                 scene.rootObject.children[board.AbsIndex(selection)].children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
                 CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
-                scene.Render();
                 winningPlayer = board.WinExists(selection, true);
                 if (winningPlayer != 0 || board.Empties == 0)
                 {
                     GameFinished = true;
                     AddWinLines();
-                    return;
+                    scene.Render();
+                    break;
                 }
+                scene.Render();
             }
         }
 
