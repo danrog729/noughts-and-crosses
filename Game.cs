@@ -22,6 +22,7 @@ namespace noughts_and_crosses
 
         public readonly int[] dimensionMultipliers;
         public WinDirection[]? winDirections;
+        public List<WinLine> Wins;
 
         public PlayerOrientedBoard(int size, int dimensions, int playerCount)
         {
@@ -53,6 +54,7 @@ namespace noughts_and_crosses
 
             // find the win directions
             CalculateWinDirections();
+            Wins = new List<WinLine>();
         }
 
         public PlayerOrientedBoard(PlayerOrientedBoard referenceBoard)
@@ -73,6 +75,7 @@ namespace noughts_and_crosses
                 referenceBoard.winDirections.CopyTo(winDirections, 0);
             }
             MaxPlayerEval = referenceBoard.MaxPlayerEval;
+            Wins = referenceBoard.Wins;
         }
 
         /// <summary>
@@ -211,6 +214,10 @@ namespace noughts_and_crosses
 
         public int WinExists(int[] index, bool findAll)
         {
+            if (findAll)
+            {
+                Wins.Clear();
+            }
             if (winDirections == null)
             {
                 return 0;
@@ -237,9 +244,8 @@ namespace noughts_and_crosses
                 }
 
                 // check each cell in that line
-                rootIndex += targetPlayer * Stride * 8;
                 bool win = true;
-                for (int cell = rootIndex; cell < rootIndex + Size * indexOffset; cell += indexOffset)
+                for (int cell = rootIndex + targetPlayer * Stride * 8; cell < rootIndex + targetPlayer * Stride * 8 + Size * indexOffset; cell += indexOffset)
                 {
                     if ((bitboards[cell / 8] << (cell % 8) & 0b_1000_0000) == 0)
                     {
@@ -254,6 +260,7 @@ namespace noughts_and_crosses
                     {
                         winDirections[directionIndex].win = true;
                         winDirections[directionIndex].player = targetPlayer;
+                        Wins.Add(new WinLine(rootIndex, indexOffset, targetPlayer));
                     }
                     else
                     {
@@ -300,28 +307,6 @@ namespace noughts_and_crosses
         }
     }
 
-    public class Win(int[] indices, int player)
-    {
-        public int[] Indices = indices;
-        public int Player = player;
-
-        public override string ToString()
-        {
-            string output = "";
-            output += "(";
-            for (int index = 0; index < Indices.Length; index++)
-            {
-                output += Indices[index].ToString();
-                if (index < Indices.Length - 1)
-                {
-                    output += ", ";
-                }
-            }
-            output += ")";
-            return output;
-        }
-    }
-
     public struct WinDirection(int rootIndex, int indexOffset, bool[] variableDimensions)
     {
         public int rootIndex = rootIndex;
@@ -329,6 +314,13 @@ namespace noughts_and_crosses
         public bool[] variableDimensions = variableDimensions;
         public int player = 0;
         public bool win = false;
+    }
+
+    public struct WinLine(int rootIndex, int indexOffset, int player)
+    {
+        public int rootIndex = rootIndex;
+        public int indexOffset = indexOffset;
+        public int player = player;
     }
 
     public static class Bot

@@ -133,11 +133,7 @@ namespace noughts_and_crosses
                 int[] dimIndex = board.DimensionalIndex(cell);
                 Object3D obj = new Object3D()
                 {
-                    Position = board.Size > 1 ? new Vector3D(
-                        -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
-                        board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
-                        board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f)
-                        : new Vector3D(0.0f, 0.0f, 0.0f),
+                    Position = DimIndexToScenePos(dimIndex),
                     Scale = new Vector3D(
                         1.0f / (board.Size * _stretches.X),
                         board.Dimensions >= 2 ? 1.0f / (board.Size * _stretches.Y) : 1.0f,
@@ -278,26 +274,16 @@ namespace noughts_and_crosses
         {
             if (board.winDirections != null && scene.rootObject != null)
             {
-                foreach (WinDirection winDirection in board.winDirections)
+                foreach (WinLine win in board.Wins)
                 {
-                    if (winDirection.win == true)
+                    int rootIndex = win.rootIndex;
+                    int finalIndex = win.rootIndex + (board.Size - 1) * win.indexOffset;
+                    scene.rootObject.children.Add(new ObjectLine(
+                        scene.rootObject.children[rootIndex].Position,
+                        scene.rootObject.children[finalIndex].Position)
                     {
-                        int[] rootDimIndex = board.DimensionalIndex(winDirection.rootIndex);
-                        int[] finalDimIndex = board.DimensionalIndex(winDirection.rootIndex + (board.Size - 1) * winDirection.indexOffset);
-                        scene.rootObject.children.Add(new ObjectLine(
-                            new Vector3D(
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[0] * 2.0f,
-                                board.Dimensions >= 2 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[1] * 2.0f : 0.0f,
-                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * rootDimIndex[2] * 2.0f : 0.0f),
-                            new Vector3D(
-                                -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[0] * 2.0f,
-                                board.Dimensions >= 2 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[1] * 2.0f : 0.0f,
-                                board.Dimensions >= 3 ? -1.0f + 1.0f / board.Size + (1.0f / board.Size) * finalDimIndex[2] * 2.0f : 0.0f)
-                                )
-                        {
-                            colour = mainBoxColour
-                        });
-                    }
+                        colour = mainBoxColour
+                    });
                 }
             }
         }
@@ -339,11 +325,12 @@ namespace noughts_and_crosses
                     board.Dimensions >= 2 ? 1.0f / (board.Size * _stretches.Y) : 1.0f,
                     board.Dimensions >= 3 ? 1.0f / (board.Size * _stretches.Z) : 1.0f);
                 int[] dimIndex = board.DimensionalIndex(index);
-                child.Position = new Vector3D(
-                    -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
-                    board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
-                    board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f);
+                child.Position = DimIndexToScenePos(dimIndex);
             }
+
+            // clear and readd the win lines
+            scene.rootObject.children.RemoveRange(board.Length, scene.rootObject.children.Count - board.Length);
+            AddWinLines();
         }
 
         public void SwitchSplitDirection()
@@ -371,6 +358,15 @@ namespace noughts_and_crosses
                     child.colour = subBoxColour;
                 }
             }
+        }
+
+        private Vector3D DimIndexToScenePos(int[] dimensionalIndex)
+        {
+            return board.Size > 1 ? new Vector3D(
+                   -1.0f + 1.0f / (board.Size * _stretches.X) + 2.0f * dimensionalIndex[0] * (board.Size * _stretches.X - 1) / (board.Size * board.Size * _stretches.X - board.Size * _stretches.X),
+                   board.Dimensions >= 2 ? -1.0f + 1.0f / (board.Size * _stretches.Y) + 2.0f * dimensionalIndex[1] * (board.Size * _stretches.Y - 1) / (board.Size * board.Size * _stretches.Y - board.Size * _stretches.Y) : 0.0f,
+                   board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimensionalIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f)
+                   : new Vector3D(0.0f, 0.0f, 0.0f);
         }
     }
     class Player

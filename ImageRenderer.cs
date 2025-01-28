@@ -90,14 +90,14 @@ namespace noughts_and_crosses
         /// <param name="p1">Point 1</param>
         /// <param name="p2">Point 2</param>
         /// <param name="colour">The colour to draw with</param>
-        public void DrawLine(Vector3D p1, Vector3D p2, System.Drawing.Color colour)
+        public void DrawLine(Vector3D p1, Vector3D p2, System.Drawing.Color colour, int thickness)
         {
             if (p1.Z < 0 || p2.Z < 0 || p1.Z > 1.0f || p2.Z > 1.0f)
             {
                 return;
             }
             // Draw the line
-            backingGraphics.DrawLine(new System.Drawing.Pen(colour, 1), new Point((int)p1.X, (int)p1.Y), new Point((int)p2.X, (int)p2.Y));
+            backingGraphics.DrawLine(new System.Drawing.Pen(colour, thickness), new Point((int)p1.X, (int)p1.Y), new Point((int)p2.X, (int)p2.Y));
         }
 
         /// <summary>

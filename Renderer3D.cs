@@ -90,7 +90,7 @@ namespace noughts_and_crosses
                     image.DrawLine(
                         new Vector3D(vertex1.X / vertex1.W, vertex1.Y / vertex1.W, vertex1.Z / vertex1.W),
                         new Vector3D(vertex2.X / vertex2.W, vertex2.Y / vertex2.W, vertex2.Z / vertex2.W),
-                        obj.colour);
+                        obj.colour, obj.wireframeThickness);
                 }
             }
             else
@@ -375,6 +375,7 @@ namespace noughts_and_crosses
         public (int, int)[] Edges;
         public (int, int, int)[] Faces;
         public Color colour;
+        public int wireframeThickness;
 
         public List<Object3D> children;
 
@@ -418,6 +419,7 @@ namespace noughts_and_crosses
 
             colour = Color.Black;
             children = new List<Object3D>();
+            wireframeThickness = 1;
         }
 
         protected void CalculateMatrices()
@@ -459,6 +461,7 @@ namespace noughts_and_crosses
 
             colour = Color.White;
             children = new List<Object3D>();
+            wireframeThickness = 1;
         }
     }
 
@@ -504,6 +507,7 @@ namespace noughts_and_crosses
 
             colour = Color.White;
             children = new List<Object3D>();
+            wireframeThickness = 1;
         }
     }
 
@@ -533,6 +537,7 @@ namespace noughts_and_crosses
 
             colour = Color.White;
             children = new List<Object3D>();
+            wireframeThickness = 1;
         }
     }
 
@@ -557,6 +562,7 @@ namespace noughts_and_crosses
 
             colour = Color.White;
             children = new List<Object3D>();
+            wireframeThickness = 4;
         }
     }
 
