@@ -34,18 +34,15 @@ namespace noughts_and_crosses
             OrthoToImageMatrix = Matrix4D.ScaleMatrix(new Vector3D(image.width / 2, -image.height / 2, 1.0f)) * Matrix4D.TranslationMatrix(new Vector3D(1.0f, -1.0f, 0.0f));
 
             float newAspectRatio = (float)width / height;
-            float oldAspectRatio = Camera.AspectRatio;
-            if (newAspectRatio > oldAspectRatio)
+            Camera.AspectRatio = newAspectRatio;
+            float theta = 2 * ArcsinDegrees(MathF.Sqrt(3) / Camera.Position.Z);
+            if (newAspectRatio <= 1)
             {
-                // window is wider than before, keep vertical fov constant
-                float verticalFOV = Camera.VerticalFOV;
-                Camera.AspectRatio = newAspectRatio;
-                Camera.VerticalFOV = verticalFOV;
+                Camera.FOV = theta;
             }
             else
             {
-                // window is the same or narrower than before, keep horizontal fov constant (default)
-                Camera.AspectRatio = newAspectRatio;
+                Camera.VerticalFOV = theta;
             }
 
             Render();
@@ -287,11 +284,11 @@ namespace noughts_and_crosses
         {
             get
             {
-                return FOV / AspectRatio;
+                return 2 * Scene3D.ArctanDegrees(Scene3D.TanDegrees(FOV / 2.0f) / AspectRatio);
             }
             set
             {
-                FOV = value * AspectRatio;
+                FOV = 2 * Scene3D.ArctanDegrees(AspectRatio * Scene3D.TanDegrees(value / 2.0f));
                 CalculateMatrices();
             }
         }
