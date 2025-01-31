@@ -230,7 +230,8 @@ namespace noughts_and_crosses
                 PlayerName = player.Name,
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
-                icon = player.Icon
+                icon = player.Icon,
+                IsBot = true
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
@@ -251,7 +252,8 @@ namespace noughts_and_crosses
                 PlayerName = player.Name,
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
-                icon = player.Icon
+                icon = player.Icon,
+                IsBot = true
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
@@ -272,7 +274,8 @@ namespace noughts_and_crosses
                 PlayerName = player.Name,
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
-                icon = player.Icon
+                icon = player.Icon,
+                IsBot = true
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
@@ -497,9 +500,11 @@ namespace noughts_and_crosses
             }
 
             // update all the player cards to be the correct colour
+            // update all the player card bot icons to be the correct colour
             foreach (PlayerCard card in PlayerCardContainer.Children)
             {
                 card.IsCurrentPlayer = card.IsCurrentPlayer;
+                card.IsBot = card.IsBot;
             }
         }
 

@@ -84,6 +84,17 @@ namespace noughts_and_crosses
 
         private bool openingPopup;
 
+        private bool _isBot;
+        public bool IsBot
+        {
+            get => _isBot;
+            set
+            {
+                _isBot = value;
+                UpdateBotIcon();
+            }
+        }
+
         private int winCount;
         private int drawCount;
         private int lossCount;
@@ -97,6 +108,7 @@ namespace noughts_and_crosses
             winCount = 0;
             drawCount = 0;
             lossCount = 0;
+            _isBot = false;
         }
 
         private void DeleteButtonClicked(object sender, RoutedEventArgs e)
@@ -220,6 +232,66 @@ namespace noughts_and_crosses
                 }
             }
             e.Handled = true;
+        }
+
+        private void UpdateBotIcon()
+        {
+            BotCanvas.Children.Clear();
+            if (_isBot)
+            {
+                // add the bot icon
+                System.Windows.Media.SolidColorBrush botIconColour = (SolidColorBrush)(App.MainApp.FindResource("StandardText"));
+
+                // head
+                System.Windows.Shapes.Rectangle head = new System.Windows.Shapes.Rectangle();
+                head.Stroke = botIconColour;
+                head.StrokeThickness = 2;
+                head.Width = 20;
+                head.Height = 15;
+                BotCanvas.Children.Add(head);
+                Canvas.SetTop(head, 10);
+                Canvas.SetLeft(head, 5);
+
+                // antenna stalk
+                System.Windows.Shapes.Line antennaStalk = new System.Windows.Shapes.Line();
+                antennaStalk.Stroke = botIconColour;
+                antennaStalk.StrokeThickness = 2;
+                antennaStalk.X1 = 15;
+                antennaStalk.Y1 = 10;
+                antennaStalk.X2 = 15;
+                antennaStalk.Y2 = 5;
+                BotCanvas.Children.Add(antennaStalk);
+
+                // antenna top
+                System.Windows.Shapes.Ellipse antennaTop = new System.Windows.Shapes.Ellipse();
+                antennaTop.Stroke = botIconColour;
+                antennaTop.StrokeThickness = 2;
+                antennaTop.Width = 5;
+                antennaTop.Height = 5;
+                BotCanvas.Children.Add(antennaTop);
+                Canvas.SetTop(antennaTop, 2.5);
+                Canvas.SetLeft(antennaTop, 12.5);
+
+                // left eye
+                System.Windows.Shapes.Ellipse leftEye = new System.Windows.Shapes.Ellipse();
+                leftEye.Stroke = botIconColour;
+                leftEye.StrokeThickness = 2;
+                leftEye.Width = 5;
+                leftEye.Height = 5;
+                BotCanvas.Children.Add(leftEye);
+                Canvas.SetTop(leftEye, 15);
+                Canvas.SetLeft(leftEye, 8.75);
+
+                // right eye
+                System.Windows.Shapes.Ellipse rightEye = new System.Windows.Shapes.Ellipse();
+                rightEye.Stroke = botIconColour;
+                rightEye.StrokeThickness = 2;
+                rightEye.Width = 5;
+                rightEye.Height = 5;
+                BotCanvas.Children.Add(rightEye);
+                Canvas.SetTop(rightEye, 15);
+                Canvas.SetLeft(rightEye, 16.25);
+            }
         }
     }
 }

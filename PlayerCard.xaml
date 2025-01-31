@@ -67,7 +67,10 @@
                 </Canvas>
             </Button>
 
-            <TextBox Margin="5" Grid.Row="0" Grid.Column="1" Name="UsernameTextbox" TextChanged="PlayerNameChanged" FontSize="20">Player</TextBox>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                <TextBox Margin="5" Name="UsernameTextbox" TextChanged="PlayerNameChanged" FontSize="20">Player</TextBox>
+                <Canvas Name="BotCanvas" Width="30" Height="30"/>
+            </StackPanel>
             <Button Margin="5" Grid.Row="0" Grid.Column="2" Name="DeleteButton" Click="DeleteButtonClicked" FontSize="16">🗙</Button>
             <Grid Margin="5,0,5,0" Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
