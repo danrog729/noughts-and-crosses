@@ -47,7 +47,10 @@ namespace noughts_and_crosses
 
         public void ViewportSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
+            if ((int)Viewport.ActualWidth != 0 && (int)Viewport.ActualHeight != 0)
+            {
+                gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
+            }
         }
 
         public void ViewportMouseMove(object sender, MouseEventArgs e)
@@ -486,6 +489,13 @@ namespace noughts_and_crosses
             SoundsEnableButton.IsEnabled = !SoundsEnableButton.IsEnabled;
             SoundsDisableButton.IsEnabled = !SoundsDisableButton.IsEnabled;
             App.MainApp.soundsOn = !App.MainApp.soundsOn;
+        }
+
+        private void ToggleDebug(object sender, RoutedEventArgs e)
+        {
+            DebugEnableButton.IsEnabled = !DebugEnableButton.IsEnabled;
+            DebugDisableButton.IsEnabled = !DebugDisableButton.IsEnabled;
+            App.MainApp.Debug = !App.MainApp.Debug;
         }
 
 

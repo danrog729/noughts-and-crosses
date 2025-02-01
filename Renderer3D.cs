@@ -144,7 +144,7 @@ namespace noughts_and_crosses
             foreach (Object3D child in rootObject.children)
             {
                 (Object3D?, float) result = PixelSearchBranch(WorldToImageMatrix * rootObject.LocalToWorldMatrix, child, x, y);
-                if (result.Item2 < closestDepth)
+                if (result.Item2 < closestDepth && result.Item2 > 0)
                 {
                     closestDepth = result.Item2;
                     closest = child;

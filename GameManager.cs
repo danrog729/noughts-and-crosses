@@ -142,6 +142,17 @@ namespace noughts_and_crosses
                 };
                 scene.rootObject.children.Add(obj);
             }
+
+            if (App.MainApp.Debug)
+            {
+                // Add the axes
+                ObjectLine xAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(1.0f, 0.0f, 0.0f)) { colour = System.Drawing.Color.Red };
+                ObjectLine yAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(0.0f, 1.0f, 0.0f)) { colour = System.Drawing.Color.Green };
+                ObjectLine zAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(0.0f, 0.0f, 1.0f)) { colour = System.Drawing.Color.Blue };
+                scene.rootObject.children.Add(xAxis);
+                scene.rootObject.children.Add(yAxis);
+                scene.rootObject.children.Add(zAxis);
+            }
         }
 
         public void Render()
@@ -165,15 +176,17 @@ namespace noughts_and_crosses
             Vector3D localZ = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 0.0f, 1.0f) * scene.rootObject.Rotation.Conjugate());
             Vector3D smallestAngle = new Vector3D(1.0f, 0.0f, 0.0f);
             float largestDotProduct = float.Max(Vector3D.DotProduct(localX, SplitDirection), Vector3D.DotProduct(localX, -SplitDirection));
-            if (Vector3D.DotProduct(localY, SplitDirection) > largestDotProduct || Vector3D.DotProduct(localY, -SplitDirection) > largestDotProduct)
+            float yDotProduct = float.Max(Vector3D.DotProduct(localY, SplitDirection), Vector3D.DotProduct(localY, -SplitDirection));
+            float zDotProduct = float.Max(Vector3D.DotProduct(localZ, SplitDirection), Vector3D.DotProduct(localZ, -SplitDirection));
+            if (yDotProduct > largestDotProduct)
             {
                 smallestAngle = new Vector3D(0.0f, 1.0f, 0.0f);
-                largestDotProduct = float.Max(Vector3D.DotProduct(localY, SplitDirection), Vector3D.DotProduct(localY, -SplitDirection));
+                largestDotProduct = yDotProduct;
             }
-            if (Vector3D.DotProduct(localZ, SplitDirection) > largestDotProduct || Vector3D.DotProduct(localZ, SplitDirection) > largestDotProduct)
+            if (zDotProduct > largestDotProduct)
             {
                 smallestAngle = new Vector3D(0.0f, 0.0f, 1.0f);
-                largestDotProduct = float.Max(Vector3D.DotProduct(localZ, SplitDirection), Vector3D.DotProduct(localZ, SplitDirection));
+                largestDotProduct = zDotProduct;
             }
             Stretches = new Vector3D(_stretches.X + smallestAngle.X * delta, _stretches.Y + smallestAngle.Y * delta, _stretches.Z + smallestAngle.Z * delta);
         }
@@ -324,9 +337,20 @@ namespace noughts_and_crosses
                 child.Position = DimIndexToScenePos(dimIndex);
             }
 
-            // clear and readd the win lines
+            // clear and re-add the win lines and debug lines
             scene.rootObject.children.RemoveRange(board.Length, scene.rootObject.children.Count - board.Length);
             AddWinLines();
+
+            if (App.MainApp.Debug)
+            {
+                // Add the axes
+                ObjectLine xAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(1.0f, 0.0f, 0.0f)) { colour = System.Drawing.Color.Red };
+                ObjectLine yAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(0.0f, 1.0f, 0.0f)) { colour = System.Drawing.Color.Green };
+                ObjectLine zAxis = new ObjectLine(new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(0.0f, 0.0f, 1.0f)) { colour = System.Drawing.Color.Blue };
+                scene.rootObject.children.Add(xAxis);
+                scene.rootObject.children.Add(yAxis);
+                scene.rootObject.children.Add(zAxis);
+            }
         }
 
         public void SwitchSplitDirection()

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:noughts_and_crosses"
         mc:Ignorable="d"
-        Title="Noughts And Crosses" Width="1200" Height="800">
+        Title="Noughts And Crosses" Width="1200" Height="800" MinWidth="800" MinHeight="600">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
@@ -14,7 +14,7 @@
 
         <TabControl Grid.Column="0">
             <TabItem Header="Game" Width="198" Style="{DynamicResource TabItemStyle}">
-                <Grid Grid.Column="0" Margin="0,10,0,0">
+                <Grid Grid.Column="0" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="50"/>
@@ -105,6 +105,16 @@
                         <TextBlock Grid.Column="0" VerticalAlignment="Center">Sounds</TextBlock>
                         <Button Grid.Column="1" IsEnabled="False" Click="ToggleSounds" Name="SoundsEnableButton">Enable</Button>
                         <Button Grid.Column="2" Click="ToggleSounds" Name="SoundsDisableButton">Disable</Button>
+                    </Grid>
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center">Debug</TextBlock>
+                        <Button Grid.Column="1" Click="ToggleDebug" Name="DebugEnableButton">Enable</Button>
+                        <Button Grid.Column="2" IsEnabled="False" Click="ToggleDebug" Name="DebugDisableButton">Disable</Button>
                     </Grid>
 
                 </StackPanel>

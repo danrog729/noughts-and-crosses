@@ -15,6 +15,7 @@ namespace noughts_and_crosses
         public bool soundsOn;
         public Sound moveSound;
         public Sound winSound;
+        public bool Debug;
 
         public List<Theme> themes = new List<Theme>();
         private Theme _currentTheme;
