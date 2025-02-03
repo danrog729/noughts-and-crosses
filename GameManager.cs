@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -80,6 +81,8 @@ namespace noughts_and_crosses
         public int winningPlayer;
 
         public readonly List<Player> Players;
+        private BackgroundWorker botThread;
+        public event EventHandler gameEndEvent;
 
         public GameManager(int size, int dimensions, List<Player> players, ref System.Windows.Controls.Image canvas)
         {
@@ -98,15 +101,17 @@ namespace noughts_and_crosses
             scene = new Scene3D(ref canvas);
             MakeGrid();
 
-            winningPlayer = 0;
-            if (players.Count > 0)
-            {
-                PlayBotMoves();
-            }
-
             backgroundColour = System.Drawing.Color.White;
             mainBoxColour = System.Drawing.Color.Black;
             subBoxColour = System.Drawing.Color.Gray;
+
+            botThread = new BackgroundWorker();
+            botThread.DoWork += PlaySingleBotMove;
+            botThread.RunWorkerCompleted += PlaceSingleBotMove;
+
+            gameEndEvent = delegate { };
+
+            winningPlayer = 0;
         }
 
         private void MakeGrid()
@@ -194,8 +199,8 @@ namespace noughts_and_crosses
 
         public bool MouseClicked(int positionX, int positionY)
         {
-            // Return if the scene has no root or current player is a bot
-            if (scene.rootObject == null || Players[CurrentPlayer - 1] is BotPlayer)
+            // Return if the scene has no root or current player is a bot or a bot is currently playing
+            if (scene.rootObject == null || Players[CurrentPlayer - 1] is BotPlayer || botThread.IsBusy)
             {
                 return false;
             }
@@ -220,16 +225,11 @@ namespace noughts_and_crosses
             // Add the icon to the display
             clickedObject.children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
 
-            // If a win exists, add the line to indicate so
+            // If a win exists, end the game
             winningPlayer = board.WinExists(boardIndex, true);
-            if (winningPlayer != 0)
+            if (winningPlayer != 0 || board.Empties == 0)
             {
-                GameFinished = true;
-                AddWinLines();
-            }
-            if (board.Empties == 0)
-            {
-                GameFinished = true;
+                EndGame();
             }
 
             // Rerender and update the current player
@@ -299,25 +299,55 @@ namespace noughts_and_crosses
 
         public void PlayBotMoves()
         {
-            if (scene.rootObject == null)
+            if (board.Empties == 0)
             {
+                GameFinished = true;
+                if (gameEndEvent != null)
+                {
+                    EndGame();
+                }
                 return;
             }
-            while (Players[CurrentPlayer - 1] is BotPlayer && board.Empties > 0)
+            if (Players[CurrentPlayer - 1] is BotPlayer)
             {
-                int[] selection = ((BotPlayer)(Players[CurrentPlayer - 1])).Move(board, CurrentPlayer);
+                botThread.RunWorkerAsync();
+            }
+        }
+
+        public void PlaySingleBotMove(object? sender, DoWorkEventArgs e)
+        {
+            int[] selection = ((BotPlayer)(Players[CurrentPlayer - 1])).Move(board, CurrentPlayer);
+            e.Result = selection;
+        }
+
+        public void PlaceSingleBotMove(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Result != null && scene.rootObject != null)
+            {
+                // place the move into the board
+                int[] selection = (int[])e.Result;
                 board[selection] = CurrentPlayer;
                 scene.rootObject.children[board.AbsIndex(selection)].children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
                 CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
                 winningPlayer = board.WinExists(selection, true);
                 if (winningPlayer != 0 || board.Empties == 0)
                 {
-                    GameFinished = true;
-                    AddWinLines();
-                    scene.Render();
-                    break;
+                    App.MainApp.winSound.Play();
+                    EndGame();
                 }
                 scene.Render();
+
+                // do the next player's move
+                if (winningPlayer == 0)
+                {
+                    App.MainApp.moveSound.Play();
+                    PlayBotMoves();
+                }
+
+                if (GameFinished)
+                {
+
+                }
             }
         }
 
@@ -400,7 +430,17 @@ namespace noughts_and_crosses
                    board.Dimensions >= 3 ? -1.0f + 1.0f / (board.Size * _stretches.Z) + 2.0f * dimensionalIndex[2] * (board.Size * _stretches.Z - 1) / (board.Size * board.Size * _stretches.Z - board.Size * _stretches.Z) : 0.0f)
                    : new Vector3D(0.0f, 0.0f, 0.0f);
         }
+
+        public void EndGame()
+        {
+            GameFinished = true;
+            AddWinLines();
+            Render();
+
+            gameEndEvent(this, new EventArgs());
+        }
     }
+
     class Player
     {
         public GameIcon Icon;

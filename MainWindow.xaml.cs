@@ -41,6 +41,8 @@ namespace noughts_and_crosses
             gameManager = new GameManager(size, dimensions, players, ref Viewport);
             UpdateRenderColours();
             gameManager.Render();
+
+            gameManager.gameEndEvent += GameEnded;
         }
 
 
@@ -91,12 +93,6 @@ namespace noughts_and_crosses
                 int previousPlayer = gameManager.CurrentPlayer - 1;
                 if (previousPlayer == 0) previousPlayer = gameManager.PlayerCount;
                 ((PlayerCard)PlayerCardContainer.Children[previousPlayer - 1]).IsCurrentPlayer = false;
-
-                // if wins, end the game
-                if (gameManager.GameFinished)
-                {
-                    GameEnded();
-                }
             }
         }
 
@@ -362,7 +358,7 @@ namespace noughts_and_crosses
         {
             if (gameStarted)
             {
-                GameEnded();
+                gameManager.EndGame();
                 return;
             }
             if (players.Count <= 0)
@@ -378,6 +374,11 @@ namespace noughts_and_crosses
             Vector3D stretches = gameManager.Stretches;
 
             gameManager = new GameManager(Int32.Parse(SizeInput.Text), Int32.Parse(DimensionInput.Text), players, ref Viewport);
+            gameManager.gameEndEvent += GameEnded;
+            if (gameManager.Players.Count > 0)
+            {
+                gameManager.PlayBotMoves();
+            }
 
             gameManager.ViewSizeChanged((int)Viewport.ActualWidth, (int)Viewport.ActualHeight, ref Viewport);
             gameManager.backgroundColour = backgroundColour;
@@ -411,14 +412,9 @@ namespace noughts_and_crosses
             SizeSlider.IsEnabled = false;
             DimensionSlider.IsEnabled = false;
             StartButton.Content = "Stop Game";
-
-            if (gameManager.GameFinished)
-            {
-                GameEnded();
-            }
         }
 
-        private void GameEnded()
+        private void GameEnded(object? sender, EventArgs e)
         {
             // display end message
             if (gameManager.winningPlayer != 0)
