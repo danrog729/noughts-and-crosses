@@ -95,15 +95,6 @@ namespace noughts_and_crosses
                 // if wins, end the game
                 if (gameManager.GameFinished)
                 {
-                    if (gameManager.winningPlayer != 0)
-                    {
-                        App.MainApp.winSound.Play();
-                        MessageBox.Show(((PlayerCard)(PlayerCardContainer.Children[gameManager.winningPlayer - 1])).PlayerName + " won!");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Draw!");
-                    }
                     GameEnded();
                 }
             }
@@ -429,6 +420,17 @@ namespace noughts_and_crosses
 
         private void GameEnded()
         {
+            // display end message
+            if (gameManager.winningPlayer != 0)
+            {
+                App.MainApp.winSound.Play();
+                MessageBox.Show(((PlayerCard)(PlayerCardContainer.Children[gameManager.winningPlayer - 1])).PlayerName + " won!");
+            }
+            else
+            {
+                MessageBox.Show("Draw!");
+            }
+
             // Enable controls
             gameStarted = false;
             SizeInput.IsEnabled = true;

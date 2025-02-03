@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace noughts_and_crosses
@@ -171,9 +172,9 @@ namespace noughts_and_crosses
             {
                 return;
             }
-            Vector3D localX = (Vector3D)(scene.rootObject.Rotation * new Vector3D(1.0f, 0.0f, 0.0f) * scene.rootObject.Rotation.Conjugate());
-            Vector3D localY = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 1.0f, 0.0f) * scene.rootObject.Rotation.Conjugate());
-            Vector3D localZ = (Vector3D)(scene.rootObject.Rotation * new Vector3D(0.0f, 0.0f, 1.0f) * scene.rootObject.Rotation.Conjugate());
+            Vector3D localX = (Vector3D)(Quaternion.ToRotationMatrix(scene.rootObject.Rotation) * new Vector3D(1.0f, 0.0f, 0.0f));
+            Vector3D localY = (Vector3D)(Quaternion.ToRotationMatrix(scene.rootObject.Rotation) * new Vector3D(0.0f, 1.0f, 0.0f));
+            Vector3D localZ = (Vector3D)(Quaternion.ToRotationMatrix(scene.rootObject.Rotation) * new Vector3D(0.0f, 0.0f, 1.0f));
             Vector3D smallestAngle = new Vector3D(1.0f, 0.0f, 0.0f);
             float largestDotProduct = float.Max(Vector3D.DotProduct(localX, SplitDirection), Vector3D.DotProduct(localX, -SplitDirection));
             float yDotProduct = float.Max(Vector3D.DotProduct(localY, SplitDirection), Vector3D.DotProduct(localY, -SplitDirection));
