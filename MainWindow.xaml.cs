@@ -43,6 +43,7 @@ namespace noughts_and_crosses
             gameManager.Render();
 
             gameManager.gameEndEvent += GameEnded;
+            gameManager.nextPlayerEvent += NextPlayer;
         }
 
 
@@ -82,17 +83,11 @@ namespace noughts_and_crosses
             {
                 // handle the placement
                 System.Windows.Point position = e.GetPosition(Viewport);
-                if (gameManager.MouseClicked((int)position.X, (int)position.Y))
+                if (gameManager.MouseClicked((int)position.X, (int)position.Y) && !gameManager.GameFinished)
                 {
                     App.MainApp.moveSound.Play();
                 }
                 leftMousePressedLast = false;
-
-                // Set the current player
-                ((PlayerCard)PlayerCardContainer.Children[gameManager.CurrentPlayer - 1]).IsCurrentPlayer = true;
-                int previousPlayer = gameManager.CurrentPlayer - 1;
-                if (previousPlayer == 0) previousPlayer = gameManager.PlayerCount;
-                ((PlayerCard)PlayerCardContainer.Children[previousPlayer - 1]).IsCurrentPlayer = false;
             }
         }
 
@@ -375,6 +370,7 @@ namespace noughts_and_crosses
 
             gameManager = new GameManager(Int32.Parse(SizeInput.Text), Int32.Parse(DimensionInput.Text), players, ref Viewport);
             gameManager.gameEndEvent += GameEnded;
+            gameManager.nextPlayerEvent += NextPlayer;
             if (gameManager.Players.Count > 0)
             {
                 gameManager.PlayBotMoves();
@@ -471,6 +467,14 @@ namespace noughts_and_crosses
             {
                 card.IsCurrentPlayer = false;
             }
+        }
+
+        private void NextPlayer(object? sender, EventArgs e)
+        {
+            ((PlayerCard)PlayerCardContainer.Children[gameManager.CurrentPlayer - 1]).IsCurrentPlayer = true;
+            int previousPlayer = gameManager.CurrentPlayer - 1;
+            if (previousPlayer == 0) previousPlayer = gameManager.PlayerCount;
+            ((PlayerCard)PlayerCardContainer.Children[previousPlayer - 1]).IsCurrentPlayer = false;
         }
 
 

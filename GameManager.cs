@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace noughts_and_crosses
@@ -83,6 +84,7 @@ namespace noughts_and_crosses
         public readonly List<Player> Players;
         private BackgroundWorker botThread;
         public event EventHandler gameEndEvent;
+        public event EventHandler nextPlayerEvent;
 
         public GameManager(int size, int dimensions, List<Player> players, ref System.Windows.Controls.Image canvas)
         {
@@ -110,6 +112,7 @@ namespace noughts_and_crosses
             botThread.RunWorkerCompleted += PlaceSingleBotMove;
 
             gameEndEvent = delegate { };
+            nextPlayerEvent = delegate { };
 
             winningPlayer = 0;
         }
@@ -229,12 +232,17 @@ namespace noughts_and_crosses
             winningPlayer = board.WinExists(boardIndex, true);
             if (winningPlayer != 0 || board.Empties == 0)
             {
+                GameFinished = true;
                 EndGame();
             }
 
             // Rerender and update the current player
             scene.Render();
             CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
+            if (nextPlayerEvent != null)
+            {
+                nextPlayerEvent(this, new EventArgs());
+            }
 
             if (!GameFinished)
             {
@@ -329,11 +337,12 @@ namespace noughts_and_crosses
                 board[selection] = CurrentPlayer;
                 scene.rootObject.children[board.AbsIndex(selection)].children.Add(Players[CurrentPlayer - 1].Icon.icon3D);
                 CurrentPlayer = CurrentPlayer % board.PlayerCount + 1;
+                nextPlayerEvent(this, new EventArgs());
                 winningPlayer = board.WinExists(selection, true);
                 if (winningPlayer != 0 || board.Empties == 0)
                 {
-                    App.MainApp.winSound.Play();
                     EndGame();
+                    return;
                 }
                 scene.Render();
 
@@ -342,11 +351,6 @@ namespace noughts_and_crosses
                 {
                     App.MainApp.moveSound.Play();
                     PlayBotMoves();
-                }
-
-                if (GameFinished)
-                {
-
                 }
             }
         }
