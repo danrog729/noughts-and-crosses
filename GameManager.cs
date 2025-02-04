@@ -110,6 +110,7 @@ namespace noughts_and_crosses
             botThread = new BackgroundWorker();
             botThread.DoWork += PlaySingleBotMove;
             botThread.RunWorkerCompleted += PlaceSingleBotMove;
+            botThread.WorkerSupportsCancellation = true;
 
             gameEndEvent = delegate { };
             nextPlayerEvent = delegate { };
@@ -326,11 +327,15 @@ namespace noughts_and_crosses
         {
             int[] selection = ((BotPlayer)(Players[CurrentPlayer - 1])).Move(board, CurrentPlayer);
             e.Result = selection;
+            if (botThread.CancellationPending)
+            {
+                e.Cancel = true;
+            }
         }
 
         public void PlaceSingleBotMove(object? sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Result != null && scene.rootObject != null)
+            if (!e.Cancelled && e.Result != null && scene.rootObject != null)
             {
                 // place the move into the board
                 int[] selection = (int[])e.Result;
@@ -440,6 +445,8 @@ namespace noughts_and_crosses
             GameFinished = true;
             AddWinLines();
             Render();
+
+            botThread.CancelAsync();
 
             gameEndEvent(this, new EventArgs());
         }
