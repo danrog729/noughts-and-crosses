@@ -172,6 +172,13 @@ namespace noughts_and_crosses
                     DimensionSlider.Value = 3;
                     oldDimensionText = "3";
                 }
+                else if (value <= 0)
+                {
+                    gameManager.Dimensions = 1;
+                    DimensionInput.Text = "1";
+                    DimensionSlider.Value = 1;
+                    oldDimensionText = "1";
+                }
                 else
                 {
                     gameManager.Dimensions = value;
