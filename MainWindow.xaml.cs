@@ -402,6 +402,8 @@ namespace noughts_and_crosses
         {
             if (gameStarted)
             {
+                // game cancelled
+                gameManager.GameCancelled = true;
                 gameManager.EndGame();
                 return;
             }
@@ -463,15 +465,18 @@ namespace noughts_and_crosses
 
         private void GameEnded(object? sender, EventArgs e)
         {
-            // display end message
-            if (gameManager.winningPlayer != 0)
+            // display end message if not cancelled
+            if (!gameManager.GameCancelled)
             {
-                App.MainApp.winSound.Play();
-                MessageBox.Show(((PlayerCard)(PlayerCardContainer.Children[gameManager.winningPlayer - 1])).PlayerName + " won!");
-            }
-            else
-            {
-                MessageBox.Show("Draw!");
+                if (gameManager.winningPlayer != 0)
+                {
+                    App.MainApp.winSound.Play();
+                    MessageBox.Show(((PlayerCard)(PlayerCardContainer.Children[gameManager.winningPlayer - 1])).PlayerName + " won!");
+                }
+                else
+                {
+                    MessageBox.Show("Draw!");
+                }
             }
 
             // Enable controls
@@ -493,25 +498,28 @@ namespace noughts_and_crosses
             DimensionSlider.IsEnabled = true;
             StartButton.Content = "Start Game";
 
-            // Add wins, losses, draws to all playercards
-            int winningPlayer = gameManager.winningPlayer;
-            for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
+            // Add wins, losses, draws to all playercards if not cancelled
+            if (!gameManager.GameCancelled)
             {
-                PlayerCard card = (PlayerCard)PlayerCardContainer.Children[playerIndex];
-                if (playerIndex == winningPlayer - 1)
+                int winningPlayer = gameManager.winningPlayer;
+                for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
                 {
-                    // this player won
-                    card.AddWin();
-                }
-                else if (winningPlayer == 0)
-                {
-                    // draw
-                    card.AddDraw();
-                }
-                else
-                {
-                    // loss
-                    card.AddLoss();
+                    PlayerCard card = (PlayerCard)PlayerCardContainer.Children[playerIndex];
+                    if (playerIndex == winningPlayer - 1)
+                    {
+                        // this player won
+                        card.AddWin();
+                    }
+                    else if (winningPlayer == 0)
+                    {
+                        // draw
+                        card.AddDraw();
+                    }
+                    else
+                    {
+                        // loss
+                        card.AddLoss();
+                    }
                 }
             }
 

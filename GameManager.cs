@@ -79,6 +79,7 @@ namespace noughts_and_crosses
         public int PlayerCount;
         public int CurrentPlayer;
         public bool GameFinished;
+        public bool GameCancelled;
         public int winningPlayer;
 
         public readonly List<Player> Players;
@@ -97,6 +98,7 @@ namespace noughts_and_crosses
             PlayerCount = players.Count;
             CurrentPlayer = 1;
             GameFinished = false;
+            GameCancelled = false;
             _stretches = new Vector3D(1.0f, 1.0f, 1.0f);
             SplitDirection = new Vector3D(1.0f, 0.0f, 0.0f);
 
