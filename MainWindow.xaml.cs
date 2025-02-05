@@ -23,6 +23,9 @@ namespace noughts_and_crosses
         string oldSizeText = "3";
         string oldDimensionText = "2";
 
+        private bool settingSizeSlider;
+        private bool settingDimensionSlider;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,6 +45,9 @@ namespace noughts_and_crosses
 
             gameManager.gameEndEvent += GameEnded;
             gameManager.nextPlayerEvent += NextPlayer;
+
+            settingSizeSlider = false;
+            settingDimensionSlider = false;
         }
 
 
@@ -113,19 +119,20 @@ namespace noughts_and_crosses
             {
                 return;
             }
+            settingSizeSlider = true;
             if (SizeInput.Text == "")
             {
+                SizeSlider.Value = 1;
                 gameManager.Size = 1;
                 oldSizeText = SizeInput.Text;
-                SizeSlider.Value = 1;
                 gameManager.ResetColours();
                 gameManager.Render();
             }
-            if (Int32.TryParse(SizeInput.Text, out int value) && value >= 1)
+            else if (Int32.TryParse(SizeInput.Text, out int value) && value >= 1)
             {
-                gameManager.Size = value;
-                oldSizeText = SizeInput.Text;
                 SizeSlider.Value = value;
+                gameManager.Size = value;
+                oldSizeText = value.ToString();
                 gameManager.ResetColours();
                 gameManager.Render();
             }
@@ -133,11 +140,12 @@ namespace noughts_and_crosses
             {
                 SizeInput.Text = oldSizeText;
             }
+            settingSizeSlider = false;
         }
 
         public void SizeSliderMoved(object sender, EventArgs e)
         {
-            if (gameManager == null)
+            if (gameManager == null || settingSizeSlider)
             {
                 return;
             }
@@ -155,28 +163,29 @@ namespace noughts_and_crosses
             {
                 return;
             }
+            settingDimensionSlider = true;
             if (DimensionInput.Text == "")
             {
+                DimensionSlider.Value = 1;
                 gameManager.Dimensions = 1;
                 oldDimensionText = DimensionInput.Text;
-                DimensionSlider.Value = 1;
                 gameManager.ResetColours();
                 gameManager.Render();
             }
-            if (Int32.TryParse(DimensionInput.Text, out int value))
+            else if (Int32.TryParse(DimensionInput.Text, out int value))
             {
                 if (value > 3)
                 {
+                    DimensionSlider.Value = 3;
                     gameManager.Dimensions = 3;
                     DimensionInput.Text = "3";
-                    DimensionSlider.Value = 3;
                     oldDimensionText = "3";
                 }
                 else if (value <= 0)
                 {
+                    DimensionSlider.Value = 1;
                     gameManager.Dimensions = 1;
                     DimensionInput.Text = "1";
-                    DimensionSlider.Value = 1;
                     oldDimensionText = "1";
                 }
                 else
@@ -192,11 +201,12 @@ namespace noughts_and_crosses
             {
                 DimensionInput.Text = oldDimensionText;
             }
+            settingDimensionSlider = false;
         }
 
         public void DimensionSliderMoved(object sender, EventArgs e)
         {
-            if (gameManager == null)
+            if (gameManager == null || settingDimensionSlider)
             {
                 return;
             }

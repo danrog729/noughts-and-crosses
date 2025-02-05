@@ -32,7 +32,7 @@
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5">Size</TextBlock>
                         <Slider Grid.Column="1" VerticalAlignment="Center" Name="SizeSlider" ValueChanged="SizeSliderMoved"
                                 Value="3" Minimum="1" Maximum="5" IsSnapToTickEnabled="True" TickPlacement="BottomRight"></Slider>
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="SizeInput" TextChanged="SizeTextChanged" Margin="5">3</TextBox>
+                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="SizeInput" Margin="5" LostFocus="SizeTextChanged">3</TextBox>
                     </Grid>
 
                     <Grid Grid.Row="1" Margin="20, 10, 20, 10">
@@ -45,7 +45,7 @@
                         <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0">Dimensions</TextBlock>
                         <Slider Grid.Column="1" VerticalAlignment="Center" Name="DimensionSlider" ValueChanged="DimensionSliderMoved"
                             Value="2" Minimum="1" Maximum="3" IsSnapToTickEnabled="True" TickPlacement="BottomRight"></Slider>
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="DimensionInput" TextChanged="DimensionTextChanged" Margin="5">2</TextBox>
+                        <TextBox Grid.Column="2" VerticalAlignment="Center" Name="DimensionInput" LostFocus="DimensionTextChanged" Margin="5">2</TextBox>
                     </Grid>
 
                     <Grid Grid.Row="2" Margin="20">
