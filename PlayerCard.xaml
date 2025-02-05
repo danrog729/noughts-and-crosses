@@ -55,9 +55,7 @@
                                 </Button>
                                 <Button Grid.Row="3" Grid.Column="2" BorderThickness="2" Margin="5" Click="TetrahedronClicked" Style="{DynamicResource CanvasButton}">
                                     <Canvas>
-                                        <Line X1="0" Y1="-17.5" X2="17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                        <Line X1="17.5" Y1="17.5" X2="-17.5" Y2="17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
-                                        <Line X1="-17.5" Y1="17.5" X2="0" Y2="-17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
+                                        <Polygon Points="0,-17.5 17.5,17.5 -17.5,17.5" Stroke="{DynamicResource StandardText}" StrokeThickness="2"/>
                                     </Canvas>
                                 </Button>
                             </Grid>

@@ -23,8 +23,6 @@ namespace noughts_and_crosses
         string oldSizeText = "3";
         string oldDimensionText = "2";
 
-        Vector3D SplitDirection = new Vector3D(1.0f, 0.0f, 0.0f);
-
         public MainWindow()
         {
             InitializeComponent();
