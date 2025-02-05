@@ -13,6 +13,8 @@ namespace noughts_and_crosses
     public partial class PlayerCard : UserControl
     {
         public event EventHandler DeletePlayer = delegate { };
+        public event EventHandler MovePlayerUp = delegate { };
+        public event EventHandler MovePlayerDown = delegate { };
         public event EventHandler UpdatePlayer = delegate { };
         public event EventHandler ChangeColour = delegate { };
         public event EventHandler ChangeIcon = delegate { };
@@ -56,6 +58,8 @@ namespace noughts_and_crosses
                     // set the colours and everything to make this obviously the current player
                     System.Windows.Media.Brush foreground = (System.Windows.Media.Brush)App.MainApp.FindResource("FocusedForeground");
                     PlayerCardBackground.Background = foreground;
+                    GameDataGrid.Background = foreground;
+                    UpDownGrid.Background = foreground;
                     WinCountText.Background = foreground;
                     DrawCountText.Background = foreground;
                     LossCountText.Background = foreground;
@@ -70,6 +74,8 @@ namespace noughts_and_crosses
                     // reset the colours back to normal
                     System.Windows.Media.Brush foreground = (System.Windows.Media.Brush)App.MainApp.FindResource("Foreground");
                     PlayerCardBackground.Background = foreground;
+                    GameDataGrid.Background = foreground;
+                    UpDownGrid.Background= foreground;
                     WinCountText.Background = foreground;
                     DrawCountText.Background = foreground;
                     LossCountText.Background = foreground;
@@ -116,6 +122,22 @@ namespace noughts_and_crosses
             if (DeletePlayer != null)
             {
                 DeletePlayer(this, e);
+            }
+        }
+
+        private void UpButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (MovePlayerUp != null)
+            {
+                MovePlayerUp(this, e);
+            }
+        }
+
+        private void DownButtonClicked(object sender, RoutedEventArgs e)
+        {
+            if (MovePlayerDown != null)
+            {
+                MovePlayerDown(this, e);
             }
         }
 

@@ -292,6 +292,8 @@ namespace noughts_and_crosses
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.MovePlayerUp += PlayerMovedUp;
+            card.MovePlayerDown += PlayerMovedDown;
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
@@ -325,6 +327,34 @@ namespace noughts_and_crosses
             players[card.PlayerNumber - 1].Icon = card.icon;
             players[card.PlayerNumber - 1].Icon.RenderCanvas(ref card.Icon);
             gameManager.Render();
+        }
+
+        private void PlayerMovedUp(object? sender, EventArgs e)
+        {
+            if (sender == null)
+            {
+                return;
+            }
+            int index = PlayerCardContainer.Children.IndexOf((PlayerCard)sender);
+            PlayerCardContainer.Children.RemoveAt(index);
+            PlayerCardContainer.Children.Insert(Int32.Max(index - 1, 0), (PlayerCard)sender);
+            Player player = players[index];
+            players.RemoveAt(index);
+            players.Insert(Int32.Max(index - 1, 0), player);
+        }
+
+        private void PlayerMovedDown(object? sender, EventArgs e)
+        {
+            if (sender == null)
+            {
+                return;
+            }
+            int index = PlayerCardContainer.Children.IndexOf((PlayerCard)sender);
+            PlayerCardContainer.Children.RemoveAt(index);
+            PlayerCardContainer.Children.Insert(Int32.Min(index + 1, PlayerCardContainer.Children.Count), (PlayerCard)sender);
+            Player player = players[index];
+            players.RemoveAt(index);
+            players.Insert(Int32.Min(index + 1, players.Count), player);
         }
 
         private static GameIcon RandomIcon()
@@ -407,6 +437,8 @@ namespace noughts_and_crosses
             {
                 card.UsernameTextbox.IsEnabled = false;
                 card.DeleteButton.IsEnabled = false;
+                card.MoveUpButton.IsEnabled = false;
+                card.MoveDownButton.IsEnabled = false;
             }
             EasyBotButton.IsEnabled = false;
             MediumBotButton.IsEnabled = false;
@@ -438,6 +470,8 @@ namespace noughts_and_crosses
             {
                 card.UsernameTextbox.IsEnabled = true;
                 card.DeleteButton.IsEnabled = true;
+                card.MoveUpButton.IsEnabled = true;
+                card.MoveDownButton.IsEnabled = true;
             }
             EasyBotButton.IsEnabled = true;
             MediumBotButton.IsEnabled = true;
