@@ -60,7 +60,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <ScrollViewer Grid.Row="0" Grid.Column = "0" Grid.ColumnSpan="3">
+                        <ScrollViewer Grid.Row="0" Grid.Column = "0" Grid.ColumnSpan="3" Name="PlayerCardScrollViewer">
                             <StackPanel Name="PlayerCardContainer"/>
                         </ScrollViewer>
 

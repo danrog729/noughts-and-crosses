@@ -21,6 +21,8 @@ namespace noughts_and_crosses
 
         public GameIcon icon;
 
+        public ScrollViewer? container;
+
         private string _playerName;
         public string PlayerName
         {
@@ -244,13 +246,25 @@ namespace noughts_and_crosses
         {
             if (sender is ScrollViewer scrollViewer)
             {
-                if (e.Delta > 0)
+                if (scrollViewer.ScrollableWidth > 0)
                 {
-                    scrollViewer.LineLeft();
+                    if (e.Delta > 0)
+                    {
+                        scrollViewer.LineLeft();
+                    }
+                    else
+                    {
+                        scrollViewer.LineRight();
+                    }
                 }
-                else
+                else if (container != null)
                 {
-                    scrollViewer.LineRight();
+                    MouseWheelEventArgs eventArgs = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = UIElement.MouseWheelEvent, // Reassign RoutedEvent
+                        Source = sender
+                    };
+                    container.RaiseEvent(eventArgs);
                 }
             }
             e.Handled = true;

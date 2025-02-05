@@ -223,10 +223,13 @@ namespace noughts_and_crosses
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
-                IsBot = true
+                IsBot = true,
+                container = PlayerCardScrollViewer
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.MovePlayerUp += PlayerMovedUp;
+            card.MovePlayerDown += PlayerMovedDown;
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
@@ -245,10 +248,13 @@ namespace noughts_and_crosses
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
-                IsBot = true
+                IsBot = true,
+                container = PlayerCardScrollViewer
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.MovePlayerUp += PlayerMovedUp;
+            card.MovePlayerDown += PlayerMovedDown;
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
@@ -267,10 +273,13 @@ namespace noughts_and_crosses
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
-                IsBot = true
+                IsBot = true,
+                container = PlayerCardScrollViewer
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
+            card.MovePlayerUp += PlayerMovedUp;
+            card.MovePlayerDown += PlayerMovedDown;
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
@@ -288,7 +297,8 @@ namespace noughts_and_crosses
                 PlayerName = player.Name,
                 PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
-                icon = player.Icon
+                icon = player.Icon,
+                container = PlayerCardScrollViewer
             };
             player.Icon.RenderCanvas(ref card.Icon);
             card.DeletePlayer += PlayerRemoved;
