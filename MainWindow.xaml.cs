@@ -96,6 +96,8 @@ namespace noughts_and_crosses
             if (gameStarted && e.LeftButton.Equals(MouseButtonState.Pressed))
             {
                 leftMousePressedLast = true;
+                System.Windows.Point position = e.GetPosition(Viewport);
+                gameManager.MouseDown((int)position.X, (int)position.Y);
             }
         }
 

@@ -86,6 +86,8 @@ namespace noughts_and_crosses
         public event EventHandler gameEndEvent;
         public event EventHandler nextPlayerEvent;
 
+        private Object3D? objectMouseDownOn;
+
         public GameManager(int size, int dimensions, List<Player> players, ref System.Windows.Controls.Image canvas)
         {
             // Set the attributes to be the arguments
@@ -201,6 +203,18 @@ namespace noughts_and_crosses
             Stretches = new Vector3D(_stretches.X + smallestAngle.X * delta, _stretches.Y + smallestAngle.Y * delta, _stretches.Z + smallestAngle.Z * delta);
         }
 
+        public void MouseDown(int positionX, int positionY)
+        {
+            // Return if the scene has no root or current player is a bot or a bot is currently playing
+            if (scene.rootObject == null || Players[CurrentPlayer - 1] is BotPlayer || botThread.IsBusy)
+            {
+                return;
+            }
+
+            // Find which object was clicked on
+            objectMouseDownOn = scene.FindObjectAtPixel(positionX, positionY);
+        }
+
         public bool MouseClicked(int positionX, int positionY)
         {
             // Return if the scene has no root or current player is a bot or a bot is currently playing
@@ -211,7 +225,7 @@ namespace noughts_and_crosses
 
             // Find which object was clicked on
             Object3D? clickedObject = scene.FindObjectAtPixel(positionX, positionY);
-            if (clickedObject == null)
+            if (clickedObject == null || clickedObject != objectMouseDownOn)
             {
                 return false;
             }
