@@ -157,6 +157,14 @@ namespace noughts_and_crosses
             gameManager.Render();
         }
 
+        public void SizeEnterPressed(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SizeTextChanged(sender, e);
+            }
+        }
+
         public void DimensionTextChanged(object sender, EventArgs e)
         {
             if (gameManager == null)
@@ -216,6 +224,14 @@ namespace noughts_and_crosses
             oldDimensionText = DimensionInput.Text;
             gameManager.ResetColours();
             gameManager.Render();
+        }
+
+        public void DimensionEnterPressed(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                DimensionTextChanged(sender, e);
+            }
         }
 
 
