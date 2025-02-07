@@ -32,6 +32,8 @@
     </LinearGradientBrush>
 
     <Thickness x:Key="BorderThickness">3</Thickness>
+    <Thickness x:Key="BottomlessBorderThickness">3,3,3,0</Thickness>
+    <Thickness x:Key="TabControlMargin">-2,-2,-2,-2</Thickness>
     <SolidColorBrush x:Key="StandardText" Color="#E1E1E1"/>
     <SolidColorBrush x:Key="ImportantText" Color="#FFE6C0"/>
     <SolidColorBrush x:Key="FocusedText" Color="#010100"/>

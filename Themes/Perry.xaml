@@ -10,6 +10,8 @@
     <SolidColorBrush x:Key="FocusedBorderColour" Color="Transparent" />
     <SolidColorBrush x:Key="AccentBorderColour" Color="Transparent" />
     <Thickness x:Key="BorderThickness">0</Thickness>
+    <Thickness x:Key="BottomlessBorderThickness">0</Thickness>
+    <Thickness x:Key="TabControlMargin">-2,-2,-2,0</Thickness>
     <SolidColorBrush x:Key="StandardText" Color="#000000"/>
     <SolidColorBrush x:Key="ImportantText" Color="#CC0000"/>
     <SolidColorBrush x:Key="FocusedText" Color="#CC0000"/>
