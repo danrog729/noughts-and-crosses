@@ -102,7 +102,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" TargetName="templateRoot" Value="{DynamicResource FocusedForeground}"/>
-                            <Setter Property="Fill" TargetName="arrow" Value="{DynamicResource ImportantText}"/>
+                            <Setter Property="Fill" TargetName="arrow" Value="{DynamicResource FocusedText}"/>
                             <Setter Property="BorderBrush" Value="{DynamicResource FocusedBorderColour}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -148,36 +148,59 @@
                             </theme:SystemDropShadowChrome>
                         </Popup>
                         <ToggleButton x:Name="toggleButton" BorderThickness="{TemplateBinding BorderThickness}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource Mode=TemplatedParent}}" Style="{DynamicResource SettingsComboBoxToggleButton}"/>
-                        <ContentPresenter x:Name="contentPresenter" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <TextBlock x:Name="contentPresenter" Text="{TemplateBinding SelectionBoxItem}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">
                             <Setter Property="Margin" TargetName="shadow" Value="0,0,5,5"/>
                             <Setter Property="Color" TargetName="shadow" Value="#71000000"/>
                         </Trigger>
-                        <Trigger Property="HasItems" Value="false">
-                            <Setter Property="Height" TargetName="dropDownBorder" Value="95"/>
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsGrouping" Value="true"/>
-                                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
-                        </MultiTrigger>
-                        <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="false">
-                            <Setter Property="Canvas.Top" TargetName="opaqueRect" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
-                            <Setter Property="Canvas.Left" TargetName="opaqueRect" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+                        <Trigger SourceName="toggleButton" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="contentPresenter" Property="Foreground" Value="{DynamicResource FocusedText}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource FocusedText}"/>
-            </Trigger>
-        </Style.Triggers>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="Background" Value="{DynamicResource Foreground}"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{DynamicResource StandardText}"/>
+
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ComboBoxItem">
+                                <Border x:Name="Border"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{DynamicResource BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
+                                    <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"/>
+                                </Border>
+
+                                <ControlTemplate.Triggers>
+                                    <!-- Hover effect -->
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource FocusedForeground}"/>
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource FocusedBorderColour}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource FocusedText}"/>
+                                    </Trigger>
+
+                                    <!-- Selected item effect -->
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource FocusedForeground}"/>
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource FocusedBorderColour}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource FocusedText}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="FocusVisual">
@@ -485,6 +508,7 @@
         <Setter Property="Foreground" Value="{DynamicResource StandardText}"/>
         <Setter Property="Background" Value="{DynamicResource Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderColour}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource BorderThickness}"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="6,2,6,2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -493,18 +517,19 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
                     <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
-                        <Border x:Name="mainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" Margin="0">
-                            <Border x:Name="innerBorder" Background="{DynamicResource Foreground}" BorderBrush="{DynamicResource BorderColour}" BorderThickness="1,1,1,0" Margin="-1" Opacity="0"/>
+                        <Border x:Name="mainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Margin="0">
+                            <Border x:Name="innerBorder" Background="{DynamicResource Foreground}" BorderBrush="{DynamicResource BorderColour}" BorderThickness="{TemplateBinding BorderThickness}" Margin="-1" Opacity="0"/>
                         </Border>
-                        <ContentPresenter x:Name="contentPresenter" ContentSource="Header" Focusable="False" HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                        <TextBlock x:Name="contentPresenter" Text="{TemplateBinding Header}" Focusable="False" HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true"/>
+                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=Self}}" Value="false"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource FocusedForeground}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource FocusedText}"/>
+                            <Setter Property="Foreground" TargetName="contentPresenter" Value="{DynamicResource FocusedText}"/>
                             <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource FocusedBorderColour}"/>
                             <Setter Property="BorderThickness" TargetName="innerBorder" Value="1,1,0,1"/>
                             <Setter Property="BorderThickness" TargetName="mainBorder" Value="1,1,0,1"/>

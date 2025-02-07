@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:noughts_and_crosses"
         mc:Ignorable="d"
-        Title="Noughts And Crosses" Width="1200" Height="800" MinWidth="800" MinHeight="600">
+        Title="Noughts And Crosses"
+        Icon="icon.ico"
+        Width="1200" Height="800" MinWidth="800" MinHeight="600">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
