@@ -41,13 +41,6 @@ namespace noughts_and_crosses
             set => _colour = value;
         }
 
-        private int _playerNumber;
-        public int PlayerNumber
-        {
-            get => _playerNumber;
-            set => _playerNumber = value;
-        }
-
         private bool _isCurrentPlayer;
         public bool IsCurrentPlayer
         {

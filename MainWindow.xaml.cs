@@ -246,7 +246,6 @@ namespace noughts_and_crosses
             PlayerCard card = new PlayerCard()
             {
                 PlayerName = player.Name,
-                PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
                 IsBot = true,
@@ -271,7 +270,6 @@ namespace noughts_and_crosses
             PlayerCard card = new PlayerCard()
             {
                 PlayerName = player.Name,
-                PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
                 IsBot = true,
@@ -296,7 +294,6 @@ namespace noughts_and_crosses
             PlayerCard card = new PlayerCard()
             {
                 PlayerName = player.Name,
-                PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
                 IsBot = true,
@@ -321,7 +318,6 @@ namespace noughts_and_crosses
             PlayerCard card = new PlayerCard()
             {
                 PlayerName = player.Name,
-                PlayerNumber = players.Count,
                 Colour = player.Icon.icon3D.colour,
                 icon = player.Icon,
                 container = PlayerCardScrollViewer
@@ -350,8 +346,9 @@ namespace noughts_and_crosses
         {
             if (sender == null) return;
             PlayerCard card = (PlayerCard)sender;
-            players[card.PlayerNumber - 1].Icon.icon3D.colour = card.Colour;
-            players[card.PlayerNumber - 1].Icon.RenderCanvas(ref card.Icon);
+            int index = PlayerCardContainer.Children.IndexOf(card);
+            players[index].Icon.icon3D.colour = card.Colour;
+            players[index].Icon.RenderCanvas(ref card.Icon);
             gameManager.Render();
         }
 
@@ -359,9 +356,10 @@ namespace noughts_and_crosses
         {
             if (sender == null) return;
             PlayerCard card = (PlayerCard)sender;
-            gameManager.scene.ReplaceObject(players[card.PlayerNumber - 1].Icon.icon3D, card.icon.icon3D);
-            players[card.PlayerNumber - 1].Icon = card.icon;
-            players[card.PlayerNumber - 1].Icon.RenderCanvas(ref card.Icon);
+            int index = PlayerCardContainer.Children.IndexOf(card);
+            gameManager.scene.ReplaceObject(players[index].Icon.icon3D, card.icon.icon3D);
+            players[index].Icon = card.icon;
+            players[index].Icon.RenderCanvas(ref card.Icon);
             gameManager.Render();
         }
 
