@@ -26,8 +26,13 @@ namespace noughts_and_crosses
         private bool settingSizeSlider;
         private bool settingDimensionSlider;
 
+        List<(int, int, int)> invalidColours;
+
         public MainWindow()
         {
+            invalidColours = new List<(int, int, int)>();
+            invalidColours.Add((0, 0, 0));
+            invalidColours.Add((0, 0, 0));
             InitializeComponent();
 
             foreach (Theme theme in App.MainApp.themes)
@@ -347,9 +352,35 @@ namespace noughts_and_crosses
             if (sender == null) return;
             PlayerCard card = (PlayerCard)sender;
             int index = PlayerCardContainer.Children.IndexOf(card);
-            players[index].Icon.icon3D.colour = card.Colour;
-            players[index].Icon.RenderCanvas(ref card.Icon);
-            gameManager.Render();
+
+            System.Drawing.Color candidate = card.Colour;
+            int red = candidate.R;
+            int green = candidate.G;
+            int blue = candidate.B;
+            bool validPlacement = true;
+            foreach ((int, int, int) colour in invalidColours)
+            {
+                if (Math.Sqrt(
+                    (colour.Item1 - red) * (colour.Item1 - red) +
+                    (colour.Item2 - green) * (colour.Item2 - green) +
+                    (colour.Item3 - blue) * (colour.Item3 - blue)) < 50)
+                {
+                    validPlacement = false;
+                }
+            }
+            if (validPlacement)
+            {
+                players[index].Icon.icon3D.colour = card.Colour;
+                players[index].Icon.RenderCanvas(ref card.Icon);
+                card.OldColour = card.Colour;
+                gameManager.Render();
+                invalidColours.Remove((card.OldColour.R, card.OldColour.G, card.OldColour.B));
+                invalidColours.Add((red, green, blue));
+            }
+            else
+            {
+                card.Colour = card.OldColour;
+            }
         }
 
         private void PlayerIconChanged(object? sender, EventArgs e)
@@ -391,7 +422,7 @@ namespace noughts_and_crosses
             players.Insert(Int32.Min(index + 1, players.Count), player);
         }
 
-        private static GameIcon RandomIcon()
+        private GameIcon RandomIcon()
         {
             Random random = new Random();
             int selection = random.Next(3);
@@ -404,18 +435,42 @@ namespace noughts_and_crosses
             return new IconCross(RandomColour());
         }
 
-        private static System.Drawing.Color RandomColour()
+        private System.Drawing.Color RandomColour()
         {
-            System.Drawing.Color[] colours = 
+            // colour of any other icon is invalid
+            for (int playerIndex = 0; playerIndex < PlayerCardContainer.Children.Count; playerIndex++)
             {
-                System.Drawing.Color.Red,
-                System.Drawing.Color.Green,
-                System.Drawing.Color.Blue,
-                System.Drawing.Color.Cyan,
-                System.Drawing.Color.Magenta
-            };
+                PlayerCard card = (PlayerCard)PlayerCardContainer.Children[playerIndex];
+                System.Drawing.Color colour = card.icon.icon3D.colour;
+                invalidColours.Add((colour.R, colour.G, colour.B));
+            }
+
             Random random = new Random();
-            return colours[random.Next(colours.Length)];
+            bool validPlacement = false;
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            int attempts = 0;
+            while (!validPlacement && attempts < 10)
+            {
+                red = random.Next(0, 256);
+                green = random.Next(0, 256);
+                blue = random.Next(0, 256);
+                validPlacement = true;
+                foreach ((int, int, int) colour in invalidColours)
+                {
+                    if (Math.Sqrt(
+                        (colour.Item1 - red) * (colour.Item1 - red) +
+                        (colour.Item2 - green) * (colour.Item2 - green) +
+                        (colour.Item3 - blue) * (colour.Item3 - blue)) < 50)
+                    {
+                        validPlacement = false;
+                    }
+                }
+                attempts++;
+            }
+            invalidColours.Add((red, green, blue));
+            return System.Drawing.Color.FromArgb(255, red, green, blue);
         }
 
 
@@ -610,15 +665,31 @@ namespace noughts_and_crosses
             object background = App.MainApp.FindResource("Background");
             if (background is System.Windows.Media.SolidColorBrush)
             {
-                System.Windows.Media.SolidColorBrush backgroundBrush = (System.Windows.Media.SolidColorBrush)(App.MainApp.FindResource("Background"));
+                System.Windows.Media.SolidColorBrush backgroundBrush = (System.Windows.Media.SolidColorBrush)background;
                 backColour = backgroundBrush.Color;
             }
             else if (background is System.Windows.Media.GradientBrush)
             {
-                System.Windows.Media.GradientBrush backgroundBrush = (System.Windows.Media.GradientBrush)(App.MainApp.FindResource("Background"));
+                System.Windows.Media.GradientBrush backgroundBrush = (System.Windows.Media.GradientBrush)background;
                 backColour = backgroundBrush.GradientStops[0].Color;
             }
             gameManager.backgroundColour = System.Drawing.Color.FromArgb(backColour.A, backColour.R, backColour.G, backColour.B);
+            invalidColours[0] = (backColour.R, backColour.G, backColour.B);
+
+            // foreground colour (for icon selection)
+            System.Windows.Media.Color foreColour;
+            object foreground = App.MainApp.FindResource("Foreground");
+            if (foreground is System.Windows.Media.SolidColorBrush)
+            {
+                System.Windows.Media.SolidColorBrush foregroundBrush = (System.Windows.Media.SolidColorBrush)foreground;
+                foreColour = foregroundBrush.Color;
+            }
+            else if (foreground is System.Windows.Media.GradientBrush)
+            {
+                System.Windows.Media.GradientBrush foregroundBrush = (System.Windows.Media.GradientBrush)foreground;
+                foreColour = foregroundBrush.GradientStops[0].Color;
+            }
+            invalidColours[1] = (foreColour.R, foreColour.G, foreColour.B);
 
             // main box colour
             System.Windows.Media.Color mainColour;

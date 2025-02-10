@@ -41,6 +41,13 @@ namespace noughts_and_crosses
             set => _colour = value;
         }
 
+        private System.Drawing.Color _oldColour;
+        public System.Drawing.Color OldColour
+        {
+            get => _oldColour;
+            set => _oldColour = value;
+        }
+
         private bool _isCurrentPlayer;
         public bool IsCurrentPlayer
         {
@@ -105,6 +112,7 @@ namespace noughts_and_crosses
             InitializeComponent();
             _playerName = UsernameTextbox.Text;
             icon = new IconCross(_colour);
+            _oldColour = _colour;
             IconPopup.PlacementTarget = IconButton;
             winCount = 0;
             drawCount = 0;
