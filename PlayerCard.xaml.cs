@@ -38,7 +38,11 @@ namespace noughts_and_crosses
         public System.Drawing.Color Colour
         {
             get => _colour;
-            set => _colour = value;
+            set
+            {
+                _colour = value;
+                _oldColour = value;
+            }
         }
 
         private System.Drawing.Color _oldColour;

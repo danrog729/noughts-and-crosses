@@ -334,6 +334,7 @@ namespace noughts_and_crosses
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
+            invalidColours.Add((player.Icon.icon3D.colour.R, player.Icon.icon3D.colour.G, player.Icon.icon3D.colour.B));
         }
 
         private void PlayerRemoved(object? sender, EventArgs e)
@@ -345,6 +346,7 @@ namespace noughts_and_crosses
             int index = PlayerCardContainer.Children.IndexOf((PlayerCard)sender);
             PlayerCardContainer.Children.RemoveAt(index);
             players.RemoveAt(index);
+            invalidColours.RemoveAt(index + 2);
         }
 
         private void PlayerColourChanged(object? sender, EventArgs e)
@@ -358,6 +360,7 @@ namespace noughts_and_crosses
             int green = candidate.G;
             int blue = candidate.B;
             bool validPlacement = true;
+            invalidColours.RemoveAt(index + 2);
             foreach ((int, int, int) colour in invalidColours)
             {
                 if (Math.Sqrt(
@@ -374,13 +377,12 @@ namespace noughts_and_crosses
                 players[index].Icon.RenderCanvas(ref card.Icon);
                 card.OldColour = card.Colour;
                 gameManager.Render();
-                invalidColours.Remove((card.OldColour.R, card.OldColour.G, card.OldColour.B));
-                invalidColours.Add((red, green, blue));
             }
             else
             {
                 card.Colour = card.OldColour;
             }
+            invalidColours.Insert(PlayerCardContainer.Children.IndexOf(card) + 2, (red, green, blue));
         }
 
         private void PlayerIconChanged(object? sender, EventArgs e)
@@ -469,7 +471,6 @@ namespace noughts_and_crosses
                 }
                 attempts++;
             }
-            invalidColours.Add((red, green, blue));
             return System.Drawing.Color.FromArgb(255, red, green, blue);
         }
 
