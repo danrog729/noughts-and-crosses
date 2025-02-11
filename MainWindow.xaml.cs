@@ -263,6 +263,16 @@ namespace noughts_and_crosses
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
+            invalidColours.Add((player.Icon.icon3D.colour.R, player.Icon.icon3D.colour.G, player.Icon.icon3D.colour.B));
+
+            // disable the add buttons if max players reached
+            if (players.Count == 255)
+            {
+                EasyBotButton.IsEnabled = false;
+                MediumBotButton.IsEnabled = false;
+                HardBotButton.IsEnabled = false;
+                PlayerButton.IsEnabled = false;
+            }
         }
 
         private void MediumBotAdded(object sender, EventArgs e)
@@ -287,6 +297,16 @@ namespace noughts_and_crosses
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
+            invalidColours.Add((player.Icon.icon3D.colour.R, player.Icon.icon3D.colour.G, player.Icon.icon3D.colour.B));
+
+            // disable the add buttons if max players reached
+            if (players.Count == 255)
+            {
+                EasyBotButton.IsEnabled = false;
+                MediumBotButton.IsEnabled = false;
+                HardBotButton.IsEnabled = false;
+                PlayerButton.IsEnabled = false;
+            }
         }
 
         private void HardBotAdded(object sender, EventArgs e)
@@ -311,6 +331,16 @@ namespace noughts_and_crosses
             card.ChangeColour += PlayerColourChanged;
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
+            invalidColours.Add((player.Icon.icon3D.colour.R, player.Icon.icon3D.colour.G, player.Icon.icon3D.colour.B));
+
+            // disable the add buttons if max players reached
+            if (players.Count == 255)
+            {
+                EasyBotButton.IsEnabled = false;
+                MediumBotButton.IsEnabled = false;
+                HardBotButton.IsEnabled = false;
+                PlayerButton.IsEnabled = false;
+            }
         }
 
         private void PlayerAdded(object sender, EventArgs e)
@@ -335,6 +365,15 @@ namespace noughts_and_crosses
             card.ChangeIcon += PlayerIconChanged;
             PlayerCardContainer.Children.Add(card);
             invalidColours.Add((player.Icon.icon3D.colour.R, player.Icon.icon3D.colour.G, player.Icon.icon3D.colour.B));
+
+            // disable the add buttons if max players reached
+            if (players.Count == 255)
+            {
+                EasyBotButton.IsEnabled = false;
+                MediumBotButton.IsEnabled = false;
+                HardBotButton.IsEnabled = false;
+                PlayerButton.IsEnabled = false;
+            }
         }
 
         private void PlayerRemoved(object? sender, EventArgs e)
@@ -347,6 +386,12 @@ namespace noughts_and_crosses
             PlayerCardContainer.Children.RemoveAt(index);
             players.RemoveAt(index);
             invalidColours.RemoveAt(index + 2);
+
+            // enable the add buttons
+            EasyBotButton.IsEnabled = true;
+            MediumBotButton.IsEnabled = true;
+            HardBotButton.IsEnabled = true;
+            PlayerButton.IsEnabled = true;
         }
 
         private void PlayerColourChanged(object? sender, EventArgs e)
@@ -408,6 +453,8 @@ namespace noughts_and_crosses
             Player player = players[index];
             players.RemoveAt(index);
             players.Insert(Int32.Max(index - 1, 0), player);
+            (int, int, int) colour = invalidColours[index + 2];
+            invalidColours.Insert(Int32.Max(index + 1, 2), colour);
         }
 
         private void PlayerMovedDown(object? sender, EventArgs e)
@@ -422,6 +469,8 @@ namespace noughts_and_crosses
             Player player = players[index];
             players.RemoveAt(index);
             players.Insert(Int32.Min(index + 1, players.Count), player);
+            (int, int, int) colour = invalidColours[index + 2];
+            invalidColours.Insert(Int32.Min(index + 3, players.Count + 2), colour);
         }
 
         private GameIcon RandomIcon()
@@ -439,14 +488,6 @@ namespace noughts_and_crosses
 
         private System.Drawing.Color RandomColour()
         {
-            // colour of any other icon is invalid
-            for (int playerIndex = 0; playerIndex < PlayerCardContainer.Children.Count; playerIndex++)
-            {
-                PlayerCard card = (PlayerCard)PlayerCardContainer.Children[playerIndex];
-                System.Drawing.Color colour = card.icon.icon3D.colour;
-                invalidColours.Add((colour.R, colour.G, colour.B));
-            }
-
             Random random = new Random();
             bool validPlacement = false;
             int red = 0;
